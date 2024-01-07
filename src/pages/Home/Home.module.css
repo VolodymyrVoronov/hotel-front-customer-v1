@@ -1,4 +1,17 @@
 .home {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+
+  width: 1560px;
+
+  margin: 0 auto;
+  padding-top: 80px;
+}
+
+.home-title {
+  font-weight: 500;
+  font-size: 36px;
+  line-height: 36px;
+  text-align: center;
 }
