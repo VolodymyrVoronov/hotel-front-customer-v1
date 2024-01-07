@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import cn from "classnames";
 
@@ -10,7 +11,6 @@ import Button from "../Button/Button";
 import ScrollIndicator from "../ScrollIndicator/ScrollIndicator";
 
 import styles from "./Header.module.css";
-import { useMemo } from "react";
 
 const headerImage: Record<string, string> = {
   [ROUTES.HOME]: "/images/home/header-home-01.png",
@@ -66,7 +66,7 @@ const Header = (): JSX.Element => {
                 Welcome to
               </span>
               <h1 className={styles["header-middle-title"]}>Luxury</h1>
-              <h2 className={styles["header-middle-subtitle"]}>Hotels</h2>
+              <span className={styles["header-middle-subtitle"]}>Hotels</span>
               <span className={styles["header-middle-text"]}>
                 Book your stay and enjoy Luxury <br /> redefined at the most
                 affordable rates.
