@@ -1,4 +1,4 @@
-.header {
+.header-wrapper {
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -6,20 +6,22 @@
   height: 100vh;
   height: 100svh;
 
-  background: gray;
+  background: rgba(20, 39, 75, 0.5);
 }
 
-.container {
+.header {
   display: flex;
   justify-content: center;
 
   min-width: 1500px;
 }
 
-.top-section {
+.header-top {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+
   flex-grow: 1;
   
 }

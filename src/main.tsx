@@ -9,23 +9,25 @@ const Facilities = lazy(() => import("./pages/Facilities/Facilities"));
 const Rooms = lazy(() => import("./pages/Rooms/Rooms"));
 const Contact = lazy(() => import("./pages/Contact/Contact"));
 
-import 'reset-css';
+import { ROUTES } from "./constants";
+
+import "reset-css";
 import "./styles/global.css";
 
-import '@fontsource-variable/cormorant';
-import '@fontsource-variable/montserrat';
+import "@fontsource-variable/cormorant";
+import "@fontsource-variable/montserrat";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: ROUTES.HOME,
     element: <Main />,
     children: [
       {
-        path: "/",
+        path: ROUTES.HOME,
         element: <Home />,
       },
       {
-        path: "/facilities",
+        path: ROUTES.FACILITIES,
         element: (
           <Suspense fallback={<>Loading...</>}>
             <Facilities />
@@ -33,7 +35,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/rooms",
+        path: ROUTES.ROOMS,
         element: (
           <Suspense fallback={<>Loading...</>}>
             <Rooms />
@@ -41,7 +43,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/contact",
+        path: ROUTES.CONTACT,
         element: (
           <Suspense fallback={<>Loading...</>}>
             <Contact />

@@ -1,21 +1,15 @@
 import Logo from "../Logo/Logo";
+import Navigation from "../Navigation/Navigation";
 
 import styles from "./Header.module.css";
 
 const Header = (): JSX.Element => {
   return (
-    <header className={styles["header"]}>
-      <div className={styles["container"]}>
-        <div className={styles["top-section"]}>
+    <header className={styles["header-wrapper"]}>
+      <div className={styles["header"]}>
+        <div className={styles["header-top"]}>
           <Logo />
-          <nav>
-            <ul>
-              <li>1</li>
-              <li>2</li>
-              <li>3</li>
-              <li>4</li>
-            </ul>
-          </nav>
+          <Navigation />
         </div>
       </div>
     </header>
