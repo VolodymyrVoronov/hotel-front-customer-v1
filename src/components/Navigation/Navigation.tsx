@@ -54,7 +54,7 @@ const Navigation = (): JSX.Element => {
               })
             }
           >
-            Contact
+            Contact us
           </NavLink>
         </li>
       </ul>
