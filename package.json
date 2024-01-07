@@ -32,6 +32,7 @@
     "svgo": "^3.2.0",
     "typescript": "^5.2.2",
     "vite": "^5.0.8",
-    "vite-plugin-image-optimizer": "^1.1.7"
+    "vite-plugin-image-optimizer": "^1.1.7",
+    "vite-plugin-optimize-css-modules": "^1.0.6"
   }
 }
