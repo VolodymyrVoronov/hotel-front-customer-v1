@@ -1,12 +1,16 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import cn from "classnames";
+
+import { checkPath } from "../../helpers";
+import { ROUTES } from "../../constants";
 
 import Navigation from "../Navigation/Navigation";
 import Logo from "../Logo/Logo";
-
-import { ROUTES } from "../../constants";
+import Button from "../Button/Button";
+import ScrollIndicator from "../ScrollIndicator/ScrollIndicator";
 
 import styles from "./Header.module.css";
+import { useMemo } from "react";
 
 const headerImage: Record<string, string> = {
   [ROUTES.HOME]: "/images/home/header-home-01.png",
@@ -14,25 +18,36 @@ const headerImage: Record<string, string> = {
   [ROUTES.ROOMS]: "/images/rooms/header-rooms-01.png",
 };
 
-const isPathContact = (pathname: string): boolean => {
-  return ROUTES.CONTACT === pathname;
-};
-
 const Header = (): JSX.Element => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const onBookNowButtonClick = (): void => {
+    navigate(ROUTES.ROOMS);
+  };
+
+  const isPathContent = useMemo(
+    () => checkPath(ROUTES.CONTACT, location.pathname),
+    [location.pathname]
+  );
 
   return (
     <header
       className={cn(styles["header-wrapper"], {
-        [styles["header-wrapper--no-bg"]]: isPathContact(location.pathname),
+        [styles["header-wrapper--no-bg"]]: isPathContent,
       })}
-      {...(!isPathContact(location.pathname) && {
+      {...(!isPathContent && {
         style: {
           backgroundImage: `url(${headerImage[location.pathname]})`,
+          transition: "background-image 0.5s ease",
         },
       })}
     >
-      <div className={styles["header"]}>
+      <div
+        className={cn(styles["header"], {
+          [styles["header--no-bg"]]: isPathContent,
+        })}
+      >
         <div className={styles["header-top"]}>
           <Logo />
           <Navigation />
@@ -40,12 +55,10 @@ const Header = (): JSX.Element => {
 
         <div
           className={cn(styles["header-middle"], {
-            [styles["header-middle--contact"]]: isPathContact(
-              location.pathname
-            ),
+            [styles["header-middle--contact"]]: isPathContent,
           })}
         >
-          {isPathContact(location.pathname) ? (
+          {isPathContent ? (
             <span className={styles["header-middle-contact"]}>CONTACT-US</span>
           ) : (
             <>
@@ -62,7 +75,18 @@ const Header = (): JSX.Element => {
           )}
         </div>
 
-        <div className={styles["header-bottom"]}>Bottom</div>
+        {!isPathContent ? (
+          <div className={styles["header-bottom"]}>
+            <Button
+              onClick={onBookNowButtonClick}
+              className={styles["header-bottom-button"]}
+            >
+              BOOK NOW
+            </Button>
+
+            <ScrollIndicator className={styles["header-bottom-indicator"]} />
+          </div>
+        ) : null}
       </div>
     </header>
   );

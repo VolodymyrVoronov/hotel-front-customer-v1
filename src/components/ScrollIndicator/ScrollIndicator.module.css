@@ -1,0 +1,21 @@
+.indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.indicator-text {
+  font-family: var(--ff-montserrat);
+  font-weight: 700;
+  font-size: 25px;
+  line-height: 25px;
+
+  color: var(--white);
+}
+
+.indicator-icon {
+  width: 61px;
+  height: 61px;
+
+  margin-top: 15px;
+}

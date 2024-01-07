@@ -10,6 +10,10 @@ const Main = (): JSX.Element => {
       <main>
         <Outlet />
       </main>
+
+      <footer>
+        <p>Footer</p>
+      </footer>
     </div>
   );
 };

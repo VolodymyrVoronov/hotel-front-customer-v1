@@ -21,7 +21,7 @@
   font-size: 25px;
   color: var(--white);
   text-decoration: none;
-  letter-spacing: 0.75px;
+  letter-spacing: 0.6px;
 }
 
 .navigation-item-link:hover:after {
