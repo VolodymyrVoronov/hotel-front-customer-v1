@@ -1,0 +1,25 @@
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  height: 100vh;
+  height: 100svh;
+
+  background: gray;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+
+  min-width: 1500px;
+}
+
+.top-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-grow: 1;
+  
+}

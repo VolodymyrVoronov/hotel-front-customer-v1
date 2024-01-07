@@ -12,7 +12,7 @@ const Contact = lazy(() => import("./pages/Contact/Contact"));
 import 'reset-css';
 import "./styles/global.css";
 
-import '@fontsource/cormorant-garamond';
+import '@fontsource-variable/cormorant';
 import '@fontsource-variable/montserrat';
 
 const router = createBrowserRouter([

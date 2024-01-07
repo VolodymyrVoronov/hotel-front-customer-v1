@@ -9,7 +9,7 @@ body {
   font-family: var(--ff-montserrat);
 
   color: var(--dark-blue);
-  
+
   background-color: var(--white);
 }
 
@@ -28,11 +28,11 @@ body {
   --white: #ffffff;
   --black: #000000;
 
-  --gold: #E0B973;
-  --gold-hover: #E9B250;
+  --gold: #e0b973;
+  --gold-hover: #e9b250;
 
-  --dark-blue: #14274A;
+  --dark-blue: #14274a;
 
-  --ff-montserrat: 'Montserrat', sans-serif;
-  --ff-cormorant-garamond: 'Cormorant Garamond', serif;
+  --ff-montserrat: "Montserrat", sans-serif;
+  --ff-cormorant: "Cormorant Variable", sans-serif;
 }

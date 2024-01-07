@@ -1,10 +1,12 @@
-import React from "react";
 import { Outlet } from "react-router";
+
+import Header from "../../components/Header/Header";
 
 const Main = (): JSX.Element => {
   return (
     <div>
-      <nav>Nav</nav>
+      <Header />
+
       <main>
         <Outlet />
       </main>
