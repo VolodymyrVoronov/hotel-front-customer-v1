@@ -1,11 +1,13 @@
 import { ReactNode } from "react";
+
 import cn from "classnames";
 
 import styles from "./SplitViewContent.module.css";
+import LazyLoadImage from "../LazyLoadImage/LazyLoadImage";
 
 interface ISplitViewContentProps {
-  imageSrc?: string;
-  imageAlt?: string;
+  imageSrc: string;
+  imageAlt: string;
 
   className?: string;
   children: ReactNode;
@@ -23,10 +25,11 @@ const SplitViewContent = ({
       <div className={styles["split-view-content"]}>{children}</div>
 
       <div className={styles["split-view-image-wrapper"]}>
-        <img
+        <LazyLoadImage
           src={imageSrc}
           alt={imageAlt}
           className={styles["split-view-image"]}
+          threshold={200}
         />
       </div>
     </div>
