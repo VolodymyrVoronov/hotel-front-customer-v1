@@ -20,7 +20,7 @@ const SplitViewContent = ({
 }: ISplitViewContentProps): JSX.Element => {
   return (
     <div className={cn(styles["split-view"], className)}>
-      <div className={styles["split-view-body"]}>{children}</div>
+      <div className={styles["split-view-content"]}>{children}</div>
 
       <div className={styles["split-view-image-wrapper"]}>
         <img

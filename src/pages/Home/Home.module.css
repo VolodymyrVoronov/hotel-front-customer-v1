@@ -15,3 +15,30 @@
   line-height: 36px;
   text-align: center;
 }
+
+.home-split-view {
+  margin-top: 93px;
+}
+
+.home-split-view-rooms {
+  margin-bottom: 70px;
+}
+
+.home-split-view-title {
+  font-family: var(--ff-cormorant);
+  font-weight: 700;
+  font-size: 60px;
+  line-height: 60px;
+}
+
+.home-split-view-text {
+  font-family: var(--ff-montserrat);
+  font-weight: 500;
+  font-size: 25px;
+  line-height: 34px;
+}
+
+.home-split-view-button {
+  font-size: 20px;
+  line-height: 20px;
+}

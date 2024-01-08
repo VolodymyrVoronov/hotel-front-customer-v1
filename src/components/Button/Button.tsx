@@ -5,6 +5,8 @@ import styles from "./Button.module.css";
 
 interface IButtonProps extends ComponentProps<"button"> {
   hasIcon?: boolean;
+  iconSrc?: string;
+  iconAlt?: string;
 
   className?: string;
   children?: ReactNode;
@@ -12,14 +14,21 @@ interface IButtonProps extends ComponentProps<"button"> {
 
 const Button = forwardRef(
   (
-    { hasIcon = true, className, children, ...props }: IButtonProps,
+    {
+      hasIcon = true,
+      iconSrc = "/icons/hotel-icon.svg",
+      iconAlt = "Hotel icon",
+      className,
+      children,
+      ...props
+    }: IButtonProps,
     ref?: Ref<HTMLButtonElement>
   ): JSX.Element => {
     return (
       <button ref={ref} className={cn(styles["button"], className)} {...props}>
         {hasIcon ? (
           <span className={styles["button-icon"]}>
-            <img src="/icons/hotel-icon.svg" alt="Hotel icon" />
+            <img src={iconSrc} alt={iconAlt} />
           </span>
         ) : null}
         <span className={styles["button-children"]}>{children}</span>
