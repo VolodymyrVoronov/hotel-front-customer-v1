@@ -1,0 +1,21 @@
+.footer {
+  display: flex;
+
+  background-color: var(--dark-blue);
+}
+
+.footer:before {
+  content: "";
+  position: relative;
+
+  display: block;
+
+  top: -55px;
+  left: 50%;
+
+  transform: translate(-50%, 0);
+
+  border: 75px solid transparent;
+  border-top: 0;
+  border-bottom: 55px solid var(--dark-blue);
+}

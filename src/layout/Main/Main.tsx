@@ -1,6 +1,9 @@
 import { Outlet } from "react-router";
 
 import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
+
+import styles from "./Main.module.css";
 
 const Main = (): JSX.Element => {
   return (
@@ -11,9 +14,7 @@ const Main = (): JSX.Element => {
         <Outlet />
       </main>
 
-      <footer>
-        <p>Footer</p>
-      </footer>
+      <Footer className={styles["main-footer"]} />
     </div>
   );
 };
