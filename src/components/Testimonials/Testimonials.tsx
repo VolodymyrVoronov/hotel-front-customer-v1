@@ -8,15 +8,15 @@ import styles from "./Testimonials.module.css";
 const slides: { text: string; author: string }[] = [
   {
     text: '"Calm, Serene, Retro – What a way to relax and enjoy."',
-    author: " Mr. and Mrs. Baxter, UK",
+    author: "Mr. and Mrs. Baxter, UK",
   },
   {
     text: '"The best hotel I\'ve ever stayed at. The staff are so welcoming and helpful."',
-    author: " Mr. Scott, UK",
+    author: "Mr. Scott, UK",
   },
   {
     text: '"The staff are so welcoming and helpful. I would definitely stay here again!"',
-    author: " Mr. Anderson, UK",
+    author: "Mr. Anderson, UK",
   },
 ];
 
