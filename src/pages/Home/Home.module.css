@@ -42,3 +42,10 @@
   font-size: 20px;
   line-height: 20px;
 }
+
+.home-testimonials {
+  display: flex;
+  justify-content: center;
+
+  margin-top: 115px;
+}

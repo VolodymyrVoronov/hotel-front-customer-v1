@@ -4,6 +4,7 @@ import { ROUTES } from "../../constants";
 
 import Button from "../../components/Button/Button";
 import SplitViewContent from "../../components/SplitViewContent/SplitViewContent";
+import Testimonials from "../../components/Testimonials/Testimonials";
 
 import styles from "./Home.module.css";
 
@@ -48,7 +49,7 @@ const Home = (): JSX.Element => {
 
         <SplitViewContent
           imageSrc="/images/home/room-photo-home-02.png"
-          imageAlt="Room photo"
+          imageAlt="Beach photo"
         >
           <h3 className={styles["home-split-view-title"]}>
             Leave your worries in the sand
@@ -67,6 +68,10 @@ const Home = (): JSX.Element => {
             EXPLORE
           </Button>
         </SplitViewContent>
+      </div>
+
+      <div className={styles["home-testimonials"]}>
+        <Testimonials />
       </div>
     </div>
   );
