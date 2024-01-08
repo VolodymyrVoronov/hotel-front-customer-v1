@@ -1,6 +1,8 @@
 import { ComponentProps, Ref, forwardRef } from "react";
 import cn from "classnames";
 
+import LazyLoadImage from "../LazyLoadImage/LazyLoadImage";
+
 import styles from "./IconButton.module.css";
 
 interface IIconButtonProps extends ComponentProps<"button"> {
@@ -21,7 +23,7 @@ const IconButton = forwardRef(
         className={cn(styles["icon-button"], className)}
         {...props}
       >
-        <img src={iconSrc} alt={iconAlt} />
+        <LazyLoadImage src={iconSrc} alt={iconAlt} threshold={200} />
       </button>
     );
   }
