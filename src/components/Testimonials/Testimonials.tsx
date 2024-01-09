@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import IconButton from "../IconButton/IconButton";
+import Heading from "../Heading/Heading";
 
 import styles from "./Testimonials.module.css";
 
@@ -33,7 +34,9 @@ const Testimonials = (): JSX.Element => {
 
   return (
     <div className={styles["testimonials"]}>
-      <h2 className={styles["testimonials-title"]}>Testimonials</h2>
+      <Heading tag="h2" className={styles["testimonials-title"]}>
+        Testimonials
+      </Heading>
 
       <AnimatePresence mode="wait" custom={index}>
         <motion.div

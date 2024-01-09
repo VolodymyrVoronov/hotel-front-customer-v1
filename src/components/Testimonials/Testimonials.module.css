@@ -8,13 +8,6 @@
   width: 768px;
 }
 
-.testimonials-title {
-  font-family: var(--ff-cormorant);
-  font-weight: 700;
-  font-size: 60px;
-  line-height: 60px;
-}
-
 .testimonials-text {
   font-family: var(--ff-montserrat);
   font-weight: 500;

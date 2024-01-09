@@ -5,6 +5,7 @@ import { ROUTES } from "../../constants";
 import Button from "../../components/Button/Button";
 import SplitViewContent from "../../components/SplitViewContent/SplitViewContent";
 import Testimonials from "../../components/Testimonials/Testimonials";
+import Heading from "../../components/Heading/Heading";
 
 import styles from "./Home.module.css";
 
@@ -31,7 +32,9 @@ const Home = (): JSX.Element => {
           imageSrc="/images/home/room-photo-home-01.png"
           imageAlt="Room photo"
         >
-          <h3 className={styles["home-split-view-title"]}>Luxury redefined</h3>
+          <Heading tag="h3" className={styles["home-split-view-title"]}>
+            Luxury redefined
+          </Heading>
           <p className={styles["home-split-view-text"]}>
             Our rooms are designed to transport you into an environment made for
             leisure. Take your mind off the day-to-day of home life and find a
@@ -51,9 +54,9 @@ const Home = (): JSX.Element => {
           imageSrc="/images/home/room-photo-home-02.png"
           imageAlt="Beach photo"
         >
-          <h3 className={styles["home-split-view-title"]}>
+          <Heading tag="h3" className={styles["home-split-view-title"]}>
             Leave your worries in the sand
-          </h3>
+          </Heading>
           <p className={styles["home-split-view-text"]}>
             We love life at the beach. Being close to the ocean with access to
             endless sandy beach ensures a relaxed state of mind. It seems like
