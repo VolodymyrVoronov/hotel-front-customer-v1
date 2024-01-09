@@ -2,6 +2,7 @@ import { ChangeEvent, useState } from "react";
 import cn from "classnames";
 import { z } from "zod";
 import { ToastContainer, ToastOptions, toast } from "react-toastify";
+import { useKeyPress } from "ahooks";
 
 import LazyLoadImage from "../LazyLoadImage/LazyLoadImage";
 import Button from "../Button/Button";
@@ -55,6 +56,12 @@ const Footer = ({ className }: IFooterProps): JSX.Element => {
       toastError();
     }
   };
+
+  useKeyPress("ESC", () => {
+    if (email.length > 0) {
+      setEmail("");
+    }
+  });
 
   return (
     <>
