@@ -13,6 +13,7 @@ import { ROUTES } from "./constants";
 
 import "reset-css";
 import "./styles/global.css";
+import "react-toastify/dist/ReactToastify.css";
 
 import "@fontsource-variable/cormorant";
 import "@fontsource-variable/montserrat";

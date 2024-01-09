@@ -1,0 +1,35 @@
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-label {
+  margin-bottom: 10px;
+
+  font-family: var(--ff-cormorant);
+  font-weight: 500;
+  font-size: 25px;
+  line-height: 25px;
+
+  color: var(--dark-blue);
+}
+
+.input {
+  padding: 20px 25px;
+
+  font-family: var(--ff-montserrat);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 16px;
+
+  color: var(--white);
+
+  border: 2px solid var(--gold);
+  border-radius: 5px;
+
+  background-color: var(--dark-blue);
+
+  &::placeholder {
+    color: var(--white);
+  }
+}
