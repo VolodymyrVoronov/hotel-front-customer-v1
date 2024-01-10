@@ -13,3 +13,29 @@
   text-align: center;
   text-transform: uppercase;
 }
+
+.facilities-text {
+  margin-top: 50px;
+  margin-bottom: 86px;
+
+  font-family: var(--ff-montserrat);
+  font-weight: 500;
+  font-size: 25px;
+  line-height: 34px;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.facilities-images {
+  display: flex;
+  flex-direction: column;
+
+  gap: 186px;
+
+  margin-bottom: 113px;
+}
+
+.facilities-testimonials {
+  display: flex;
+  justify-content: center;
+}

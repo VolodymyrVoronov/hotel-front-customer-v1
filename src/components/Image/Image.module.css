@@ -1,0 +1,47 @@
+.image-wrapper {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.image {
+  font-style: italic;
+
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.image-caption {
+  position: absolute;
+
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  max-width: 684px;
+  width: 100%;
+
+  margin: 0 auto;
+
+  padding: 16px 0;
+
+  font-family: var(--ff-montserrat);
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 48px;
+  text-align: center;
+  text-transform: uppercase;
+
+  color: var(--dark-blue);
+
+  background-color: var(--white);
+}
