@@ -1,4 +1,107 @@
 .room {
   display: flex;
   flex-direction: column;
+
+  border: 1px solid var(--dark-blue);
+  border-radius: 10px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+
+.room-photos {
+  width: 100%;
+}
+
+.room-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  min-height: 141px;
+
+  font-family: var(--montserrat);
+  font-weight: 600;
+  font-size: 60px;
+  line-height: 60px;
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+
+  background-color: var(--dark-blue);
+}
+
+.room-footer {
+  display: flex;
+  flex-direction: column;
+
+  padding: 80px 150px;
+}
+
+.room-footer-control {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.room-accordion-button-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  gap: 40px;
+}
+
+.room-accordion-button {
+  border-radius: 50%;
+
+  &:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.room-accordion-button-text {
+  font-size: 25px;
+  line-height: 25px;
+  font-weight: 600;
+
+  text-transform: uppercase;
+}
+
+.room-book-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-width: 300px;
+
+  font-size: 25px;
+  line-height: 25px;
+}
+
+.room-book-text,
+.room-book-price {
+  font-weight: 600;
+}
+
+.room-accordion-content {
+  display: flex;
+  justify-content: center;
+}
+
+.room-accordion-content-text {
+  font-size: 25px;
+  line-height: 30px;
+  font-weight: 500;
+
+  span {
+    display: block;
+    height: 50px;
+  }
 }
