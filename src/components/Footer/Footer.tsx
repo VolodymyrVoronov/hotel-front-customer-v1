@@ -28,10 +28,8 @@ const Footer = ({ className }: IFooterProps): JSX.Element => {
 
             <div className={styles["footer-address-info"]}>
               <span>497 Evergreen Rd. Roseville, CA 95673</span>
-              <a href="tel:++44 345 678 903">+44 345 678 903</a>
-              <a href="mailto:luxury_hotels@gmail.com">
-                luxury_hotels@gmail.com
-              </a>
+              <a href="tel:+11 222 333 333">+11 222 333 333</a>
+              <a href="mailto:text@mail.com">text@mail.com</a>
             </div>
           </div>
 
