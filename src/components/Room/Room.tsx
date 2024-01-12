@@ -90,6 +90,7 @@ const Room = ({
               {accordionTitle}
             </span>
           </div>
+
           <Button
             className={styles["room-book-button"]}
             onClick={onBookButtonClick}

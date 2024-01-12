@@ -1,6 +1,5 @@
 import Heading from "../../components/Heading/Heading";
 import Image from "../../components/Image/Image";
-import Testimonials from "../../components/Testimonials/Testimonials";
 
 import styles from "./Facilities.module.css";
 
@@ -73,10 +72,6 @@ const Facilities = (): JSX.Element => {
             classNameWrapper={styles["facilities-image"]}
           />
         ))}
-      </div>
-
-      <div className={styles["facilities-testimonials"]}>
-        <Testimonials />
       </div>
     </div>
   );

@@ -4,7 +4,6 @@ import { ROUTES } from "../../constants";
 
 import Button from "../../components/Button/Button";
 import SplitViewContent from "../../components/SplitViewContent/SplitViewContent";
-import Testimonials from "../../components/Testimonials/Testimonials";
 import Heading from "../../components/Heading/Heading";
 
 import styles from "./Home.module.css";
@@ -71,10 +70,6 @@ const Home = (): JSX.Element => {
             EXPLORE
           </Button>
         </SplitViewContent>
-      </div>
-
-      <div className={styles["home-testimonials"]}>
-        <Testimonials />
       </div>
     </div>
   );
