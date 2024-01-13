@@ -1,7 +1,10 @@
+import { Suspense, useState } from "react";
 import { useTitle } from "ahooks";
 
 import Heading from "../../components/Heading/Heading";
 import Room from "../../components/Room/Room";
+import Modal from "../../components/Modal/Modal";
+import ModalContent from "../../components/ModalContent/ModalContent";
 
 import styles from "./Rooms.module.css";
 
@@ -74,38 +77,63 @@ const rooms = [
 const Rooms = (): JSX.Element => {
   useTitle("Luxury Hotels - Rooms");
 
+  const [toggleModal, setToggleModal] = useState(false);
+  const [roomId, setRoomId] = useState("");
+
+  const onRoomBookButtonClick = (roomId: string): void => {
+    setRoomId(roomId);
+    setToggleModal(true);
+
+    const selectedRoom = rooms.find((room) => room.roomId === roomId);
+    console.log(selectedRoom);
+  };
+
+  const onCloseModal = (): void => {
+    setToggleModal(false);
+  };
+
   return (
-    <div className={styles["rooms"]}>
-      <Heading tag="h3" className={styles["rooms-title"]}>
-        Rooms and Rates
-      </Heading>
+    <>
+      <div className={styles["rooms"]}>
+        <Heading tag="h3" className={styles["rooms-title"]}>
+          Rooms and Rates
+        </Heading>
 
-      <span className={styles["rooms-text"]}>
-        Each of our bright, light-flooded rooms come with everything you could
-        possibly need for a comfortable stay. And yes, comfort isn’t our only
-        objective, we also value good design, sleek contemporary furnishing
-        complemented by the rich tones of nature’s palette as visible from our
-        rooms’ sea-view windows and terraces.
-      </span>
+        <span className={styles["rooms-text"]}>
+          Each of our bright, light-flooded rooms come with everything you could
+          possibly need for a comfortable stay. And yes, comfort isn’t our only
+          objective, we also value good design, sleek contemporary furnishing
+          complemented by the rich tones of nature’s palette as visible from our
+          rooms’ sea-view windows and terraces.
+        </span>
 
-      <div className={styles["rooms-items"]}>
-        {rooms.map((room) => (
-          <Room
-            className={styles["rooms-item"]}
-            key={room.id}
-            id={room.id}
-            roomId={room.roomId}
-            roomPrice={room.roomPrice}
-            title={room.title}
-            photos={room.photos}
-            accordionTitle={room.accordionTitle}
-            accordionContentText={room.accordionContentText}
-            buttonPriceText={room.buttonPriceText}
-            buttonBookText={room.buttonBookText}
-          />
-        ))}
+        <div className={styles["rooms-items"]}>
+          {rooms.map((room) => (
+            <Room
+              className={styles["rooms-item"]}
+              key={room.id}
+              id={room.id}
+              roomId={room.roomId}
+              title={room.title}
+              photos={room.photos}
+              accordionTitle={room.accordionTitle}
+              accordionContentText={room.accordionContentText}
+              buttonPriceText={room.buttonPriceText}
+              buttonBookText={room.buttonBookText}
+              onBookButtonHandle={onRoomBookButtonClick}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+
+      <Modal isOpen={toggleModal} onClose={onCloseModal}>
+        <ModalContent>
+          <Suspense fallback={<>Loading...</>}>
+            <p>{roomId}</p>
+          </Suspense>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

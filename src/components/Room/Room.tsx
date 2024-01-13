@@ -12,7 +12,6 @@ import "react-image-gallery/styles/css/image-gallery.css";
 interface IRoomProps extends ComponentProps<"div"> {
   id: string;
   roomId: string;
-  roomPrice: number;
   title: string;
   photos: {
     original: string;
@@ -20,6 +19,7 @@ interface IRoomProps extends ComponentProps<"div"> {
   } extends ReactImageGalleryItem
     ? Array<ReactImageGalleryItem>
     : never;
+
   accordionTitle: string;
   accordionContentText: string;
 
@@ -27,19 +27,24 @@ interface IRoomProps extends ComponentProps<"div"> {
   buttonBookText: string;
 
   className?: string;
+
+  onBookButtonHandle?: (roomId: string) => void;
 }
 
 const Room = ({
   roomId,
-  roomPrice,
   title,
   photos,
+
   accordionTitle,
   accordionContentText,
+
   buttonPriceText,
   buttonBookText,
 
   className,
+
+  onBookButtonHandle,
 
   ...props
 }: IRoomProps): JSX.Element => {
@@ -47,7 +52,9 @@ const Room = ({
   const [toggleAccordion, setToggleAccordion] = useState(false);
 
   const onBookButtonClick = (): void => {
-    console.log(`Book room ${roomId}, price ${roomPrice}`);
+    if (onBookButtonHandle) {
+      onBookButtonHandle(roomId);
+    }
   };
 
   const onBookButtonHover = (): void => {

@@ -63,6 +63,7 @@ const Contact = (): JSX.Element => {
           <ContactForm className={styles["form"]} />
         </div>
       </div>
+
       <Modal isOpen={toggleModal} onClose={onCloseModal}>
         <ModalContent>
           <Suspense fallback={<>Loading...</>}>
