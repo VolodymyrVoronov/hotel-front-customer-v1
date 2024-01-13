@@ -1,3 +1,5 @@
+import { useTitle } from "ahooks";
+
 import Heading from "../../components/Heading/Heading";
 import Room from "../../components/Room/Room";
 
@@ -70,6 +72,8 @@ const rooms = [
 ];
 
 const Rooms = (): JSX.Element => {
+  useTitle("Luxury Hotels - Rooms");
+
   return (
     <div className={styles["rooms"]}>
       <Heading tag="h3" className={styles["rooms-title"]}>

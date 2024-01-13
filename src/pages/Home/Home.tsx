@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTitle } from "ahooks";
 
 import { ROUTES } from "../../constants";
 
@@ -9,6 +10,8 @@ import Heading from "../../components/Heading/Heading";
 import styles from "./Home.module.css";
 
 const Home = (): JSX.Element => {
+  useTitle("Luxury Hotels - Home");
+
   const navigate = useNavigate();
 
   const onExploreRoomsButtonClick = (): void => {

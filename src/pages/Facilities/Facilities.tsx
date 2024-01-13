@@ -1,3 +1,5 @@
+import { useTitle } from "ahooks";
+
 import Heading from "../../components/Heading/Heading";
 import Image from "../../components/Image/Image";
 
@@ -48,6 +50,8 @@ const facilitiesImages: Array<{
 ];
 
 const Facilities = (): JSX.Element => {
+  useTitle("Luxury Hotels - Facilities");
+
   return (
     <div className={styles["facilities"]}>
       <Heading tag="h3" className={styles["facilities-title"]}>
