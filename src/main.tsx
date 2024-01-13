@@ -4,6 +4,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import Main from "./layout/Main/Main";
 import Home from "./pages/Home/Home";
+import Loader from "./components/Loader/Loader";
 
 const Facilities = lazy(() => import("./pages/Facilities/Facilities"));
 const Rooms = lazy(() => import("./pages/Rooms/Rooms"));
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
       {
         path: ROUTES.FACILITIES,
         element: (
-          <Suspense fallback={<>Loading...</>}>
+          <Suspense fallback={<Loader />}>
             <Facilities />
           </Suspense>
         ),
@@ -38,7 +39,7 @@ const router = createBrowserRouter([
       {
         path: ROUTES.ROOMS,
         element: (
-          <Suspense fallback={<>Loading...</>}>
+          <Suspense fallback={<Loader />}>
             <Rooms />
           </Suspense>
         ),
@@ -46,7 +47,7 @@ const router = createBrowserRouter([
       {
         path: ROUTES.CONTACT,
         element: (
-          <Suspense fallback={<>Loading...</>}>
+          <Suspense fallback={<Loader />}>
             <Contact />
           </Suspense>
         ),

@@ -5,6 +5,7 @@ import ContactForm from "../../components/ContactForm/ContactForm";
 import Heading from "../../components/Heading/Heading";
 import Modal from "../../components/Modal/Modal";
 import ModalContent from "../../components/ModalContent/ModalContent";
+import Loader from "../../components/Loader/Loader";
 
 const GoogleMap = lazy(() => import("../../components/GoogleMap/GoogleMap"));
 
@@ -66,7 +67,7 @@ const Contact = (): JSX.Element => {
 
       <Modal isOpen={toggleModal} onClose={onCloseModal}>
         <ModalContent>
-          <Suspense fallback={<>Loading...</>}>
+          <Suspense fallback={<Loader />}>
             <GoogleMap />
           </Suspense>
         </ModalContent>

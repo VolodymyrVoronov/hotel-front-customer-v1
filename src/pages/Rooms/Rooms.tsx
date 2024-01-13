@@ -5,6 +5,7 @@ import Heading from "../../components/Heading/Heading";
 import Room from "../../components/Room/Room";
 import Modal from "../../components/Modal/Modal";
 import ModalContent from "../../components/ModalContent/ModalContent";
+import Loader from "../../components/Loader/Loader";
 
 import styles from "./Rooms.module.css";
 
@@ -128,7 +129,7 @@ const Rooms = (): JSX.Element => {
 
       <Modal isOpen={toggleModal} onClose={onCloseModal}>
         <ModalContent>
-          <Suspense fallback={<>Loading...</>}>
+          <Suspense fallback={<Loader />}>
             <p>{roomId}</p>
           </Suspense>
         </ModalContent>

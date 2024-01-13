@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import Button from "../Button/Button";
 import IconButton from "../IconButton/IconButton";
+import Loader from "../Loader/Loader";
 
 const ImageGalleryComponent = lazy(
   () => import("../ImageGallery/ImageGallery")
@@ -76,7 +77,7 @@ const Room = ({
   return (
     <div className={cn(styles["room"], className)} {...props}>
       <div className={styles["room-photos"]}>
-        <Suspense fallback={<>Loading...</>}>
+        <Suspense fallback={<Loader />}>
           <ImageGalleryComponent photos={photos} />
         </Suspense>
       </div>
