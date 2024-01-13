@@ -30,6 +30,7 @@ const Image = ({
         src={src}
         alt={alt}
         threshold={300}
+        effect="opacity"
         {...props}
       />
       <span className={styles["image-caption"]}>{captionText}</span>
