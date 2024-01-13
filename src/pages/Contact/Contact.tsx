@@ -27,7 +27,7 @@ const Contact = (): JSX.Element => {
     <>
       <div className={styles["contact"]}>
         <Heading tag="h3" className={styles["contact-title"]}>
-          WE ARE HERE FOR YOU
+          We are here for you
         </Heading>
 
         <span className={styles["contact-text"]}>
