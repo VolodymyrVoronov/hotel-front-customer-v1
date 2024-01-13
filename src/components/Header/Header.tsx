@@ -39,7 +39,6 @@ const Header = (): JSX.Element => {
       {...(!isPathContent && {
         style: {
           backgroundImage: `url(${headerImage[location.pathname]})`,
-          transition: "background-image 0.5s ease",
         },
       })}
     >
