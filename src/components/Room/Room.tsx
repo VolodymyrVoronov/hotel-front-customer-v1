@@ -1,10 +1,14 @@
-import { ComponentProps, useState } from "react";
+import { ComponentProps, Suspense, lazy, useState } from "react";
 import cn from "classnames";
-import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
+import { ReactImageGalleryItem } from "react-image-gallery";
 import { motion, AnimatePresence } from "framer-motion";
 
 import Button from "../Button/Button";
 import IconButton from "../IconButton/IconButton";
+
+const ImageGalleryComponent = lazy(
+  () => import("../ImageGallery/ImageGallery")
+);
 
 import styles from "./Room.module.css";
 import "react-image-gallery/styles/css/image-gallery.css";
@@ -72,16 +76,11 @@ const Room = ({
   return (
     <div className={cn(styles["room"], className)} {...props}>
       <div className={styles["room-photos"]}>
-        <ImageGallery
-          additionalClass={styles["room-photos-gallery"]}
-          items={photos}
-          showBullets
-          lazyLoad
-          showThumbnails={false}
-          showPlayButton={false}
-          showFullscreenButton={false}
-        />
+        <Suspense fallback={<>Loading...</>}>
+          <ImageGalleryComponent photos={photos} />
+        </Suspense>
       </div>
+
       <h2 className={styles["room-title"]}>{title}</h2>
 
       <div className={styles["room-footer"]}>
