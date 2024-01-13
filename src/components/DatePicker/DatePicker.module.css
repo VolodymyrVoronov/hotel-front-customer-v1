@@ -1,0 +1,22 @@
+.date-picker {
+  padding: 20px 25px;
+
+  font-family: var(--ff-montserrat);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 28px;
+
+  color: var(--dark-blue);
+
+  border: 2px solid var(--dark-blue);
+  border-radius: 5px;
+
+  &::placeholder {
+    color: var(--white);
+  }
+}
+
+.date-picker-calendar {
+  font-family: var(--ff-montserrat);
+  font-weight: 500;
+}

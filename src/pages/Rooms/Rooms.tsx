@@ -6,6 +6,7 @@ import Room from "../../components/Room/Room";
 import Modal from "../../components/Modal/Modal";
 import ModalContent from "../../components/ModalContent/ModalContent";
 import Loader from "../../components/Loader/Loader";
+import DatePickerComponent from "../../components/DatePicker/DatePicker";
 
 import styles from "./Rooms.module.css";
 
@@ -131,6 +132,7 @@ const Rooms = (): JSX.Element => {
         <ModalContent>
           <Suspense fallback={<Loader />}>
             <p>{roomId}</p>
+            <DatePickerComponent />
           </Suspense>
         </ModalContent>
       </Modal>
