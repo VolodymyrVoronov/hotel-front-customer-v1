@@ -1,28 +1,72 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import addDays from "date-fns/addDays";
+import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
+import cn from "classnames";
 
 import "react-datepicker/dist/react-datepicker.css";
 
 import styles from "./DatePicker.module.css";
 
-const DatePickerComponent = (): JSX.Element => {
+interface IDatePickerComponentProps {
+  excludeDates?: [string, string][];
+  onDatePickerChange?: (dates: [Date, Date]) => void;
+
+  className?: string;
+}
+
+const DatePickerComponent = ({
+  excludeDates: excludeDatesProp,
+  onDatePickerChange: onDatePickerChangeProp,
+
+  className,
+}: IDatePickerComponentProps): JSX.Element => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [excludedDates, setExcludedDates] = useState<Date[]>([]);
 
   const onDatePickerChange = (dates: [Date, Date]) => {
     const [start, end] = dates;
 
     setStartDate(start);
     setEndDate(end);
+
+    if (start && end) {
+      onDatePickerChangeProp?.(dates);
+    }
   };
 
-  console.log(startDate.toISOString(), endDate?.toISOString());
+  // console.log(startDate.toISOString(), endDate?.toISOString());
+  // console.log("excludeDatesProp", excludeDatesProp);
+  // console.log("excludedDates", excludedDates);
+
+  useEffect(() => {
+    if (excludeDatesProp) {
+      const excludedDatesTemp: Date[] = [];
+
+      for (const element of excludeDatesProp) {
+        const [startDate, endDate] = element;
+
+        const differenceInDays = differenceInCalendarDays(
+          new Date(endDate),
+          new Date(startDate)
+        );
+
+        for (let i = 0; i <= differenceInDays; i++) {
+          excludedDatesTemp.push(addDays(new Date(startDate), i));
+        }
+      }
+
+      setExcludedDates(excludedDatesTemp);
+    }
+  }, [excludeDatesProp]);
 
   return (
     <DatePicker
-      className={styles["date-picker"]}
+      className={cn(styles["date-picker"], className)}
+      wrapperClassName={styles["date-picker-wrapper"]}
       calendarClassName={styles["date-picker-calendar"]}
+      calendarIconClassname={styles["date-picker-icon"]}
       dateFormat="dd/MM/yyyy"
       minDate={new Date()}
       todayButton="Today"
@@ -30,10 +74,8 @@ const DatePickerComponent = (): JSX.Element => {
       onChange={onDatePickerChange}
       startDate={startDate}
       endDate={endDate}
-      excludeDates={[addDays(new Date(), 1), addDays(new Date(), 5)]}
+      excludeDates={excludedDates}
       selectsRange
-
-      // inline
     />
   );
 };

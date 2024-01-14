@@ -36,3 +36,32 @@
 
   width: 1200px;
 }
+
+.room-booking-details-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  width: 100%;
+}
+
+.room-booking-details-modal-title {
+  font-family: var(--ff-montserrat);
+  font-weight: 500;
+  font-size: 35px;
+  line-height: 35px;
+  text-transform: uppercase;
+}
+
+.room-booking-details-modal-text {
+  margin-top: 25px;
+
+  font-family: var(--ff-montserrat);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 16px;
+}
+
+.room-booking-details-modal-date-picker {
+  margin-top: 10px;
+}
