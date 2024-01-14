@@ -1,15 +1,21 @@
 import cn from "classnames";
+import { ComponentProps } from "react";
 
 import styles from "./Loader.module.css";
 
-interface ILoaderProps {
+interface ILoaderProps extends ComponentProps<"div"> {
+  type?: "vertical" | "horizontal";
   className?: string;
 }
 
-const Loader = ({ className }: ILoaderProps): JSX.Element => {
+const Loader = ({
+  type = "vertical",
+  className,
+  ...props
+}: ILoaderProps): JSX.Element => {
   return (
-    <div className={cn(styles["loader-wrapper"], className)}>
-      <span className={styles["loader"]} />
+    <div className={cn(styles["loader-wrapper"], className)} {...props}>
+      <span className={`${styles[`loader-${type}`]}`} />
     </div>
   );
 };

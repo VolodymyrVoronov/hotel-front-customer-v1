@@ -1,14 +1,19 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState, Suspense, lazy } from "react";
 import cn from "classnames";
+import { useLocalStorageState } from "ahooks";
 
 import { checkEmptyFields } from "../../helpers";
 
-import DatePickerComponent from "../../components/DatePicker/DatePicker";
 import Input from "../Input/Input";
 import Button from "../Button/Button";
+import IconButton from "../IconButton/IconButton";
+import Loader from "../Loader/Loader";
+
+const DatePickerComponent = lazy(
+  () => import("../../components/DatePicker/DatePicker")
+);
 
 import styles from "./BookingForm.module.css";
-import IconButton from "../IconButton/IconButton";
 
 interface IBookingFormProps {
   roomId: string;
@@ -39,11 +44,27 @@ const BookingForm = ({
   excludeDates: excludeDatesProp,
   className,
 }: IBookingFormProps): JSX.Element => {
+  const [formDataLocalStorage, setFormDataLocalStorage] =
+    useLocalStorageState<IFormData>("form-data-state", {
+      defaultValue: initialFormData,
+    });
+
+  const [formData, setFormData] = useState<IFormData>(() => {
+    if (formDataLocalStorage) {
+      return formDataLocalStorage;
+    } else {
+      return initialFormData;
+    }
+  });
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [excludeDates, setExcludeDates] = useState<[string, string][]>([]);
 
-  const [formData, setFormData] = useState<IFormData>(initialFormData);
+  const onFormSubmit = (e: ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    console.log(formData);
+  };
 
   const onInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -51,6 +72,8 @@ const BookingForm = ({
     const { name, value } = e.target;
 
     setFormData({ ...formData, [name]: value });
+
+    setFormDataLocalStorage({ ...formData, [name]: value });
   };
 
   const onDatePickerChange = (dates: [Date, Date]): void => {
@@ -62,6 +85,7 @@ const BookingForm = ({
     setStartDate(new Date());
     setEndDate(null);
     setFormData(initialFormData);
+    setFormDataLocalStorage(initialFormData);
   };
 
   useEffect(() => {
@@ -75,10 +99,14 @@ const BookingForm = ({
         startDate,
         endDate,
       }));
+
+      setFormDataLocalStorage({
+        ...formData,
+        startDate,
+        endDate,
+      });
     }
   }, [startDate, endDate]);
-
-  console.log(formData);
 
   return (
     <div className={cn(styles["booking-form-wrapper"], className)}>
@@ -87,14 +115,23 @@ const BookingForm = ({
           Chose start date and end date
         </p>
 
-        <DatePickerComponent
-          className={styles["booking-form-date-picker"]}
-          onDatePickerChange={onDatePickerChange}
-          excludeDates={excludeDates}
-          endDate={endDate}
-        />
+        <Suspense
+          fallback={
+            <Loader
+              type="horizontal"
+              className={styles["booking-form-left-loader"]}
+            />
+          }
+        >
+          <DatePickerComponent
+            className={styles["booking-form-date-picker"]}
+            onDatePickerChange={onDatePickerChange}
+            excludeDates={excludeDates}
+            endDate={formData.endDate}
+          />
+        </Suspense>
 
-        <form className={styles["booking-form"]}>
+        <form className={styles["booking-form"]} onSubmit={onFormSubmit}>
           <label className={styles["booking-form-label"]}>
             Name{" "}
             <Input

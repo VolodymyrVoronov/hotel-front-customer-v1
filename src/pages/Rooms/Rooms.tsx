@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import { useTitle } from "ahooks";
 
 import Heading from "../../components/Heading/Heading";
@@ -7,8 +7,11 @@ import Modal from "../../components/Modal/Modal";
 import ModalContent from "../../components/ModalContent/ModalContent";
 import Loader from "../../components/Loader/Loader";
 
+const BookingForm = lazy(
+  () => import("../../components/BookingForm/BookingForm")
+);
+
 import styles from "./Rooms.module.css";
-import BookingForm from "../../components/BookingForm/BookingForm";
 
 const rooms = [
   {

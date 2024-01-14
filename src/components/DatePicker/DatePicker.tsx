@@ -24,7 +24,13 @@ const DatePickerComponent = ({
   className,
 }: IDatePickerComponentProps): JSX.Element => {
   const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(() => {
+    if (endDateProp) {
+      return new Date(endDateProp);
+    } else {
+      return null;
+    }
+  });
   const [excludedDates, setExcludedDates] = useState<Date[]>([]);
 
   const onDatePickerChange = (dates: [Date, Date]) => {

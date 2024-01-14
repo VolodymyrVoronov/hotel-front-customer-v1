@@ -12,10 +12,10 @@
   flex-direction: column;
   justify-content: center;
   grid-column: 1;
+}
 
-  /* gap: 20px; */
-
-  /* width: 100%; */
+.booking-form-left-loader {
+  height: 100px;
 }
 
 .booking-form-right {
