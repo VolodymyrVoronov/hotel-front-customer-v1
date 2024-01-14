@@ -113,7 +113,7 @@ const Room = ({
                   initial={{ y: 25, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -25, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.1 }}
                 >
                   {buttonBookText}
                 </motion.div>
@@ -124,7 +124,7 @@ const Room = ({
                   initial={{ y: 25, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -25, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.1 }}
                 >
                   {buttonPriceText}
                 </motion.div>
@@ -142,7 +142,7 @@ const Room = ({
                 initial={{ y: -25, height: 0, opacity: 0 }}
                 animate={{ y: 0, height: "auto", opacity: 1 }}
                 exit={{ y: -25, height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.2 }}
               >
                 <span />
                 {accordionContentText}

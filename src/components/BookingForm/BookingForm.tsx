@@ -1,4 +1,11 @@
-import { ChangeEvent, useEffect, useState, Suspense, lazy } from "react";
+import {
+  ChangeEvent,
+  useEffect,
+  useState,
+  Suspense,
+  lazy,
+  useCallback,
+} from "react";
 import cn from "classnames";
 import { useLocalStorageState } from "ahooks";
 
@@ -76,10 +83,13 @@ const BookingForm = ({
     setFormDataLocalStorage({ ...formData, [name]: value });
   };
 
-  const onDatePickerChange = (dates: [Date, Date]): void => {
-    setStartDate(dates[0]);
-    setEndDate(dates[1]);
-  };
+  const onDatePickerChange = useCallback(
+    (dates: [Date, Date]): void => {
+      setStartDate(dates[0]);
+      setEndDate(dates[1]);
+    },
+    [setStartDate, setEndDate]
+  );
 
   const onClearButtonClick = (): void => {
     setStartDate(new Date());
