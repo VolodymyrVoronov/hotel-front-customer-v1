@@ -92,6 +92,7 @@ const Room = ({
               className={styles["room-accordion-button"]}
               iconSrc="/icons/plus-icon.svg"
               iconAlt="Plus icon"
+              title="Expand"
             />
             <span className={styles["room-accordion-button-text"]}>
               {accordionTitle}
@@ -104,6 +105,7 @@ const Room = ({
             onMouseEnter={onBookButtonHover}
             onMouseLeave={onBookButtonLeave}
             hasIcon={false}
+            title="Book now"
           >
             <AnimatePresence mode="wait" initial>
               {toggleBookButton ? (
