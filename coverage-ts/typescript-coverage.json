@@ -1,0 +1,23 @@
+{
+  "fileCounts": {},
+  "anys": [
+    {
+      "file": "src\\helpers\\index.ts",
+      "line": 33,
+      "character": 38,
+      "text": "value",
+      "kind": 1
+    },
+    {
+      "file": "src\\helpers\\index.ts",
+      "line": 33,
+      "character": 48,
+      "text": "value",
+      "kind": 1
+    }
+  ],
+  "percentage": 99.91500212494688,
+  "total": 2353,
+  "covered": 2351,
+  "uncovered": 2
+}

@@ -1,0 +1,180 @@
+
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>Rooms.tsx</title>
+      <link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" type="text/css" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/javascript/javascript.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.css" type="text/css" rel="stylesheet">
+<script src="..\..\..\..\assets\source-file.js" type="text/javascript" charset="utf-8"></script>
+<link href="..\..\..\..\assets\source-file.css" type="text/css" rel="stylesheet">
+    </head>
+    <body>
+    <div style="margin-top:3em" class="ui container"><h1 class="ui header"><a href="..\..\..\..\index.html">TypeScript coverage report</a></h1><table style="margin-top:2em" class="ui celled table"><thead class=""><tr class=""><th class="">Filename</th><th class="">Percent</th><th class="">Threshold</th><th class="">Total</th><th class="">Covered</th><th class="">Uncovered</th></tr></thead><tbody class=""><tr class="positive"><td class="">src\pages\Rooms\Rooms.tsx</td><td class="">100.00%</td><td class="">80%</td><td class="">160</td><td class="">160</td><td class="">0</td></tr></tbody></table><textarea id="editor" readonly="" style="margin-top:3em">import { Suspense, lazy, useState } from &quot;react&quot;;
+import { useTitle } from &quot;ahooks&quot;;
+
+import Heading from &quot;../../components/Heading/Heading&quot;;
+import Room from &quot;../../components/Room/Room&quot;;
+import Modal from &quot;../../components/Modal/Modal&quot;;
+import ModalContent from &quot;../../components/ModalContent/ModalContent&quot;;
+import Loader from &quot;../../components/Loader/Loader&quot;;
+
+const BookingForm = lazy(
+  () =&gt; import(&quot;../../components/BookingForm/BookingForm&quot;)
+);
+
+import styles from &quot;./Rooms.module.css&quot;;
+
+const rooms = [
+  {
+    id: &quot;1&quot;,
+    roomId: &quot;single&quot;,
+    roomPrice: 147,
+    title: &quot;Single room&quot;,
+    photos: [
+      {
+        original: &quot;/images/rooms/single/single-room-01.jpg&quot;,
+        thumbnail: &quot;/images/rooms/single/single-room-01.jpg&quot;,
+      },
+      {
+        original: &quot;/images/rooms/single/single-room-02.jpg&quot;,
+        thumbnail: &quot;/images/rooms/single/single-room-02.jpg&quot;,
+      },
+    ],
+    accordionTitle: &quot;View room details&quot;,
+    accordionContentText:
+      &quot;Our rooms are designed to transport you into an environment made for leisure. Take your mind off the day-to-day of home life and find a private paradise for yourself.&quot;,
+    buttonPriceText: &quot;$147  Avg/night&quot;,
+    buttonBookText: &quot;Book Now&quot;,
+  },
+  {
+    id: &quot;2&quot;,
+    roomId: &quot;double&quot;,
+    roomPrice: 190,
+    title: &quot;Double room&quot;,
+    photos: [
+      {
+        original: &quot;/images/rooms/double/double-room-01.jpg&quot;,
+        thumbnail: &quot;/images/rooms/double/double-room-01.jpg&quot;,
+      },
+      {
+        original: &quot;/images/rooms/double/double-room-02.jpg&quot;,
+        thumbnail: &quot;/images/rooms/double/double-room-02.jpg&quot;,
+      },
+    ],
+    accordionTitle: &quot;View room details&quot;,
+    accordionContentText:
+      &quot;Our rooms are designed to transport you into an environment made for leisure. Take your mind off the day-to-day of home life and find a private paradise for yourself.&quot;,
+    buttonPriceText: &quot;$190  Avg/night&quot;,
+    buttonBookText: &quot;Book Now&quot;,
+  },
+  {
+    id: &quot;3&quot;,
+    roomId: &quot;twin&quot;,
+    roomPrice: 255,
+    title: &quot;Twin room&quot;,
+    photos: [
+      {
+        original: &quot;/images/rooms/twin/twin-room-01.jpg&quot;,
+        thumbnail: &quot;/images/rooms/twin/twin-room-01.jpg&quot;,
+      },
+      {
+        original: &quot;/images/rooms/twin/twin-room-02.jpg&quot;,
+        thumbnail: &quot;/images/rooms/twin/twin-room-02.jpg&quot;,
+      },
+    ],
+    accordionTitle: &quot;View room details&quot;,
+    accordionContentText:
+      &quot;Our rooms are designed to transport you into an environment made for leisure. Take your mind off the day-to-day of home life and find a private paradise for yourself.&quot;,
+    buttonPriceText: &quot;$255  Avg/night&quot;,
+    buttonBookText: &quot;Book Now&quot;,
+  },
+];
+
+const testExcludeDates: [string, string][] = [
+  [&quot;2024-01-21T10:45:17.000Z&quot;, &quot;2024-01-26T10:45:17.000Z&quot;],
+  [&quot;2024-01-31T10:45:17.000Z&quot;, &quot;2024-02-03T10:45:17.000Z&quot;],
+  [&quot;2024-02-07T10:45:17.000Z&quot;, &quot;2024-02-10T10:45:17.000Z&quot;],
+];
+
+const Rooms = (): JSX.Element =&gt; {
+  useTitle(&quot;Luxury Hotels - Rooms&quot;);
+
+  const [toggleModal, setToggleModal] = useState(false);
+  const [roomId, setRoomId] = useState(&quot;&quot;);
+
+  const onRoomBookButtonClick = (roomId: string): void =&gt; {
+    setRoomId(roomId);
+    setToggleModal(true);
+
+    const selectedRoom = rooms.find((room) =&gt; room.roomId === roomId);
+    console.log(&quot;RoomId %s&quot;, roomId, selectedRoom);
+  };
+
+  const onCloseModal = (): void =&gt; {
+    setToggleModal(false);
+  };
+
+  return (
+    &lt;&gt;
+      &lt;div className={styles[&quot;rooms&quot;]}&gt;
+        &lt;Heading tag=&quot;h3&quot; className={styles[&quot;rooms-title&quot;]}&gt;
+          Rooms and Rates
+        &lt;/Heading&gt;
+
+        &lt;span className={styles[&quot;rooms-text&quot;]}&gt;
+          Each of our bright, light-flooded rooms come with everything you could
+          possibly need for a comfortable stay. And yes, comfort isn’t our only
+          objective, we also value good design, sleek contemporary furnishing
+          complemented by the rich tones of nature’s palette as visible from our
+          rooms’ sea-view windows and terraces.
+        &lt;/span&gt;
+
+        &lt;div className={styles[&quot;rooms-items&quot;]}&gt;
+          {rooms.map((room) =&gt; (
+            &lt;Room
+              className={styles[&quot;rooms-item&quot;]}
+              key={room.id}
+              id={room.id}
+              roomId={room.roomId}
+              title={room.title}
+              photos={room.photos}
+              accordionTitle={room.accordionTitle}
+              accordionContentText={room.accordionContentText}
+              buttonPriceText={room.buttonPriceText}
+              buttonBookText={room.buttonBookText}
+              onBookButtonHandle={onRoomBookButtonClick}
+            /&gt;
+          ))}
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;Modal isOpen={toggleModal} onClose={onCloseModal}&gt;
+        &lt;ModalContent className={styles[&quot;room-booking-details-modal&quot;]}&gt;
+          &lt;Suspense fallback={&lt;Loader /&gt;}&gt;
+            &lt;Heading
+              tag=&quot;h3&quot;
+              className={styles[&quot;room-booking-details-modal-title&quot;]}
+            &gt;
+              Booking Details
+            &lt;/Heading&gt;
+
+            &lt;BookingForm
+              className={styles[&quot;room-booking-details-modal-booking-form&quot;]}
+              roomId={roomId}
+              excludeDates={testExcludeDates}
+            /&gt;
+          &lt;/Suspense&gt;
+        &lt;/ModalContent&gt;
+      &lt;/Modal&gt;
+    &lt;/&gt;
+  );
+};
+
+export default Rooms;
+</textarea><pre id="annotations" style="display:none">[]</pre></div>
+    <p class="footer-text">TypeScript Coverage Report generated by <a href="https://github.com/plantain-00/type-coverage">type-coverage</a> and <a href="https://github.com/alexcanessa/typescript-coverage-report">typescript-coverage-report</a> at Sun, 14 Jan 2024 14:47:18 GMT</p>
+    </body>
+  </html>
+  

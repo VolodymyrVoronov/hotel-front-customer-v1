@@ -1,0 +1,172 @@
+
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>ContactForm.tsx</title>
+      <link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" type="text/css" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/javascript/javascript.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.css" type="text/css" rel="stylesheet">
+<script src="..\..\..\..\assets\source-file.js" type="text/javascript" charset="utf-8"></script>
+<link href="..\..\..\..\assets\source-file.css" type="text/css" rel="stylesheet">
+    </head>
+    <body>
+    <div style="margin-top:3em" class="ui container"><h1 class="ui header"><a href="..\..\..\..\index.html">TypeScript coverage report</a></h1><table style="margin-top:2em" class="ui celled table"><thead class=""><tr class=""><th class="">Filename</th><th class="">Percent</th><th class="">Threshold</th><th class="">Total</th><th class="">Covered</th><th class="">Uncovered</th></tr></thead><tbody class=""><tr class="positive"><td class="">src\components\ContactForm\ContactForm.tsx</td><td class="">100.00%</td><td class="">80%</td><td class="">167</td><td class="">167</td><td class="">0</td></tr></tbody></table><textarea id="editor" readonly="" style="margin-top:3em">import {
+  ChangeEvent,
+  ComponentProps,
+  ForwardedRef,
+  forwardRef,
+  useState,
+} from &quot;react&quot;;
+import cn from &quot;classnames&quot;;
+import { z } from &quot;zod&quot;;
+import { ToastContainer, ToastOptions, toast } from &quot;react-toastify&quot;;
+import { useKeyPress } from &quot;ahooks&quot;;
+
+import { checkEmptyFields } from &quot;../../helpers&quot;;
+
+import Button from &quot;../Button/Button&quot;;
+import Input from &quot;../Input/Input&quot;;
+
+import styles from &quot;./ContactForm.module.css&quot;;
+
+interface IContactFormProps extends ComponentProps&lt;&quot;form&quot;&gt; {
+  className?: string;
+}
+
+interface IFormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
+const initialFormData = {
+  name: &quot;&quot;,
+  email: &quot;&quot;,
+  message: &quot;&quot;,
+};
+
+const emailSchema = z.string().email();
+
+const toastConfig = {
+  position: &quot;top-right&quot;,
+  autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  theme: &quot;light&quot;,
+} satisfies ToastOptions;
+
+const toastSuccess = (): void =&gt; {
+  toast.success(&quot;Thank you for subscribing!&quot;, {
+    ...toastConfig,
+  });
+};
+
+const toastError = (): void =&gt; {
+  toast.error(&quot;Please enter a valid email&quot;, {
+    ...toastConfig,
+  });
+};
+
+const ContactForm = forwardRef(
+  (
+    { className, ...props }: IContactFormProps,
+    ref: ForwardedRef&lt;HTMLFormElement&gt;
+  ) =&gt; {
+    const [formData, setFormData] = useState&lt;IFormData&gt;(initialFormData);
+
+    const onInputChange = (
+      e: ChangeEvent&lt;HTMLInputElement | HTMLTextAreaElement&gt;
+    ) =&gt; {
+      const { name, value } = e.target;
+      setFormData({ ...formData, [name]: value });
+    };
+
+    const onFormSubmit = (e: ChangeEvent&lt;HTMLFormElement&gt;) =&gt; {
+      e.preventDefault();
+
+      const checkEmailResult = emailSchema.safeParse(formData.email);
+
+      if (checkEmailResult.success) {
+        toastSuccess();
+        setFormData(initialFormData);
+      } else {
+        toastError();
+      }
+    };
+
+    useKeyPress(&quot;ESC&quot;, () =&gt; {
+      if (checkEmptyFields(formData, &quot;some&quot;)) {
+        setFormData(initialFormData);
+      }
+    });
+
+    return (
+      &lt;&gt;
+        &lt;ToastContainer /&gt;
+        &lt;form
+          ref={ref}
+          className={cn(styles[&quot;contact-form&quot;], className)}
+          onSubmit={onFormSubmit}
+          {...props}
+        &gt;
+          &lt;label className={styles[&quot;contact-form-label&quot;]}&gt;
+            Name{&quot; &quot;}
+            &lt;Input
+              inputType=&quot;text&quot;
+              name=&quot;name&quot;
+              classNameWrapper={styles[&quot;contact-form-wrapper&quot;]}
+              classNameInput={styles[&quot;contact-form-input&quot;]}
+              required
+              value={formData.name}
+              onChange={onInputChange}
+            /&gt;
+          &lt;/label&gt;
+
+          &lt;label className={styles[&quot;contact-form-label&quot;]}&gt;
+            Email{&quot; &quot;}
+            &lt;Input
+              inputType=&quot;email&quot;
+              name=&quot;email&quot;
+              classNameWrapper={styles[&quot;contact-form-wrapper&quot;]}
+              classNameInput={styles[&quot;contact-form-input&quot;]}
+              required
+              value={formData.email}
+              onChange={onInputChange}
+            /&gt;
+          &lt;/label&gt;
+
+          &lt;label className={styles[&quot;contact-form-label&quot;]}&gt;
+            Message{&quot; &quot;}
+            &lt;textarea
+              name=&quot;message&quot;
+              className={styles[&quot;contact-form-area&quot;]}
+              rows={15}
+              required
+              value={formData.message}
+              onChange={onInputChange}
+            /&gt;
+          &lt;/label&gt;
+
+          &lt;Button
+            disabled={!checkEmptyFields(formData, &quot;every&quot;)}
+            className={styles[&quot;contact-form-button&quot;]}
+            hasIcon={false}
+          &gt;
+            Submit
+          &lt;/Button&gt;
+        &lt;/form&gt;
+      &lt;/&gt;
+    );
+  }
+);
+
+export default ContactForm;
+</textarea><pre id="annotations" style="display:none">[]</pre></div>
+    <p class="footer-text">TypeScript Coverage Report generated by <a href="https://github.com/plantain-00/type-coverage">type-coverage</a> and <a href="https://github.com/alexcanessa/typescript-coverage-report">typescript-coverage-report</a> at Sun, 14 Jan 2024 14:47:18 GMT</p>
+    </body>
+  </html>
+  

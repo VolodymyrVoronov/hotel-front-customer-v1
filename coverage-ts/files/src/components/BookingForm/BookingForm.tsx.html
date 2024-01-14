@@ -1,0 +1,247 @@
+
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>BookingForm.tsx</title>
+      <link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" type="text/css" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/javascript/javascript.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.css" type="text/css" rel="stylesheet">
+<script src="..\..\..\..\assets\source-file.js" type="text/javascript" charset="utf-8"></script>
+<link href="..\..\..\..\assets\source-file.css" type="text/css" rel="stylesheet">
+    </head>
+    <body>
+    <div style="margin-top:3em" class="ui container"><h1 class="ui header"><a href="..\..\..\..\index.html">TypeScript coverage report</a></h1><table style="margin-top:2em" class="ui celled table"><thead class=""><tr class=""><th class="">Filename</th><th class="">Percent</th><th class="">Threshold</th><th class="">Total</th><th class="">Covered</th><th class="">Uncovered</th></tr></thead><tbody class=""><tr class="positive"><td class="">src\components\BookingForm\BookingForm.tsx</td><td class="">100.00%</td><td class="">80%</td><td class="">258</td><td class="">258</td><td class="">0</td></tr></tbody></table><textarea id="editor" readonly="" style="margin-top:3em">import {
+  ChangeEvent,
+  useEffect,
+  useState,
+  Suspense,
+  lazy,
+  useCallback,
+} from &quot;react&quot;;
+import cn from &quot;classnames&quot;;
+import { useLocalStorageState } from &quot;ahooks&quot;;
+
+import { checkEmptyFields } from &quot;../../helpers&quot;;
+
+import Input from &quot;../Input/Input&quot;;
+import Button from &quot;../Button/Button&quot;;
+import IconButton from &quot;../IconButton/IconButton&quot;;
+import Loader from &quot;../Loader/Loader&quot;;
+
+const DatePickerComponent = lazy(
+  () =&gt; import(&quot;../../components/DatePicker/DatePicker&quot;)
+);
+
+import styles from &quot;./BookingForm.module.css&quot;;
+
+interface IBookingFormProps {
+  roomId: string;
+  excludeDates: [string, string][];
+  className?: string;
+}
+
+interface IFormData {
+  name: string;
+  email: string;
+  message: string;
+  phone: string;
+  startDate: Date;
+  endDate: Date | null;
+}
+
+const initialFormData = {
+  name: &quot;&quot;,
+  email: &quot;&quot;,
+  message: &quot;&quot;,
+  phone: &quot;&quot;,
+  startDate: new Date(),
+  endDate: null,
+};
+
+const BookingForm = ({
+  // roomId,
+  excludeDates: excludeDatesProp,
+  className,
+}: IBookingFormProps): JSX.Element =&gt; {
+  const [formDataLocalStorage, setFormDataLocalStorage] =
+    useLocalStorageState&lt;IFormData&gt;(&quot;form-data-state&quot;, {
+      defaultValue: initialFormData,
+    });
+
+  const [formData, setFormData] = useState&lt;IFormData&gt;(() =&gt; {
+    if (formDataLocalStorage) {
+      return formDataLocalStorage;
+    } else {
+      return initialFormData;
+    }
+  });
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState&lt;Date | null&gt;(null);
+  const [excludeDates, setExcludeDates] = useState&lt;[string, string][]&gt;([]);
+
+  const onFormSubmit = (e: ChangeEvent&lt;HTMLFormElement&gt;) =&gt; {
+    e.preventDefault();
+
+    console.log(formData);
+  };
+
+  const onInputChange = (
+    e: ChangeEvent&lt;HTMLInputElement | HTMLTextAreaElement&gt;
+  ) =&gt; {
+    const { name, value } = e.target;
+
+    setFormData({ ...formData, [name]: value });
+
+    setFormDataLocalStorage({ ...formData, [name]: value });
+  };
+
+  const onDatePickerChange = useCallback(
+    (dates: [Date, Date]): void =&gt; {
+      setStartDate(dates[0]);
+      setEndDate(dates[1]);
+    },
+    [setStartDate, setEndDate]
+  );
+
+  const onClearButtonClick = (): void =&gt; {
+    setStartDate(new Date());
+    setEndDate(null);
+    setFormData(initialFormData);
+    setFormDataLocalStorage(initialFormData);
+  };
+
+  useEffect(() =&gt; {
+    setExcludeDates(excludeDatesProp);
+  }, [excludeDatesProp]);
+
+  useEffect(() =&gt; {
+    if (startDate &amp;&amp; endDate) {
+      setFormData((prevFormData) =&gt; ({
+        ...prevFormData,
+        startDate,
+        endDate,
+      }));
+
+      setFormDataLocalStorage({
+        ...formData,
+        startDate,
+        endDate,
+      });
+    }
+  }, [startDate, endDate]);
+
+  return (
+    &lt;div className={cn(styles[&quot;booking-form-wrapper&quot;], className)}&gt;
+      &lt;div className={styles[&quot;booking-form-left&quot;]}&gt;
+        &lt;p className={styles[&quot;booking-form-left-text&quot;]}&gt;
+          Chose start date and end date
+        &lt;/p&gt;
+
+        &lt;Suspense
+          fallback={
+            &lt;Loader
+              type=&quot;horizontal&quot;
+              className={styles[&quot;booking-form-left-loader&quot;]}
+            /&gt;
+          }
+        &gt;
+          &lt;DatePickerComponent
+            className={styles[&quot;booking-form-date-picker&quot;]}
+            onDatePickerChange={onDatePickerChange}
+            excludeDates={excludeDates}
+            endDate={formData.endDate}
+          /&gt;
+        &lt;/Suspense&gt;
+
+        &lt;form className={styles[&quot;booking-form&quot;]} onSubmit={onFormSubmit}&gt;
+          &lt;label className={styles[&quot;booking-form-label&quot;]}&gt;
+            Name{&quot; &quot;}
+            &lt;Input
+              inputType=&quot;text&quot;
+              name=&quot;name&quot;
+              classNameInput={styles[&quot;booking-form-input&quot;]}
+              required
+              value={formData.name}
+              onChange={onInputChange}
+            /&gt;
+          &lt;/label&gt;
+
+          &lt;label className={styles[&quot;booking-form-label&quot;]}&gt;
+            Email{&quot; &quot;}
+            &lt;Input
+              inputType=&quot;email&quot;
+              name=&quot;email&quot;
+              classNameInput={styles[&quot;booking-form-input&quot;]}
+              required
+              value={formData.email}
+              onChange={onInputChange}
+            /&gt;
+          &lt;/label&gt;
+
+          &lt;label className={styles[&quot;booking-form-label&quot;]}&gt;
+            Phone{&quot; &quot;}
+            &lt;Input
+              inputType=&quot;tel&quot;
+              name=&quot;phone&quot;
+              classNameInput={styles[&quot;booking-form-input&quot;]}
+              required
+              value={formData.phone}
+              onChange={onInputChange}
+              pattern=&quot;[0-9]{3}-[0-9]{3}-[0-9]{4}&quot;
+            /&gt;
+            &lt;small&gt;Format: 123-456-7890&lt;/small&gt;
+          &lt;/label&gt;
+
+          &lt;label className={styles[&quot;booking-form-label&quot;]}&gt;
+            Message{&quot; &quot;}
+            &lt;textarea
+              name=&quot;message&quot;
+              className={styles[&quot;booking-form-area&quot;]}
+              rows={5}
+              required
+              value={formData.message}
+              onChange={onInputChange}
+            /&gt;
+          &lt;/label&gt;
+
+          &lt;div className={styles[&quot;booking-form-buttons&quot;]}&gt;
+            &lt;Button
+              className={styles[&quot;booking-form-button&quot;]}
+              disabled={!checkEmptyFields(formData, &quot;every&quot;)}
+              hasIcon={false}
+              type=&quot;submit&quot;
+            &gt;
+              Submit
+            &lt;/Button&gt;
+
+            &lt;IconButton
+              onClick={onClearButtonClick}
+              type=&quot;button&quot;
+              title=&quot;clear&quot;
+              iconSrc=&quot;/icons/plus-icon.svg&quot;
+              iconAlt=&quot;close&quot;
+              className={styles[&quot;booking-form-button-clear&quot;]}
+            /&gt;
+          &lt;/div&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+
+      &lt;div className={styles[&quot;booking-form-right&quot;]}&gt;
+        {/* &lt;BookingDetails
+          roomId={roomId}
+          startDate={startDate}
+          endDate={endDate}
+          className={styles[&quot;booking-form-details&quot;]}
+        /&gt; */}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+};
+
+export default BookingForm;
+</textarea><pre id="annotations" style="display:none">[]</pre></div>
+    <p class="footer-text">TypeScript Coverage Report generated by <a href="https://github.com/plantain-00/type-coverage">type-coverage</a> and <a href="https://github.com/alexcanessa/typescript-coverage-report">typescript-coverage-report</a> at Sun, 14 Jan 2024 14:47:18 GMT</p>
+    </body>
+  </html>
+  
