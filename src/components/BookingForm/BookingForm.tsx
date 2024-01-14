@@ -205,8 +205,9 @@ const BookingForm = ({
               disabled={!checkEmptyFields(formData, "every")}
               hasIcon={false}
               type="submit"
+              title="Book"
             >
-              Submit
+              Book
             </Button>
 
             <IconButton
