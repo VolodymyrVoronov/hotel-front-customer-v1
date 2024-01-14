@@ -19,11 +19,16 @@ import Loader from "../Loader/Loader";
 const DatePickerComponent = lazy(
   () => import("../../components/DatePicker/DatePicker")
 );
+const BookingDetails = lazy(
+  () => import("../../components/BookingDetails/BookingDetails")
+);
 
 import styles from "./BookingForm.module.css";
 
 interface IBookingFormProps {
-  roomId: string;
+  roomId: string | undefined;
+  roomTitle: string | undefined;
+  roomPrice: number | undefined;
   excludeDates: [string, string][];
   className?: string;
 }
@@ -48,6 +53,8 @@ const initialFormData = {
 
 const BookingForm = ({
   // roomId,
+  roomTitle,
+  roomPrice,
   excludeDates: excludeDatesProp,
   className,
 }: IBookingFormProps): JSX.Element => {
@@ -215,12 +222,19 @@ const BookingForm = ({
       </div>
 
       <div className={styles["booking-form-right"]}>
-        {/* <BookingDetails
-          roomId={roomId}
-          startDate={startDate}
-          endDate={endDate}
-          className={styles["booking-form-details"]}
-        /> */}
+        <Suspense fallback={<Loader />}>
+          <BookingDetails
+            price={roomPrice}
+            title={roomTitle}
+            startDate={formData.startDate}
+            endDate={formData.endDate}
+            name={formData.name}
+            email={formData.email}
+            phone={formData.phone}
+            message={formData.message}
+            className={styles["booking-details"]}
+          />
+        </Suspense>
       </div>
     </div>
   );

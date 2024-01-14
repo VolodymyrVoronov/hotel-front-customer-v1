@@ -31,6 +31,7 @@ const ImageGalleryComponent = memo(
         showThumbnails={false}
         showPlayButton={false}
         showFullscreenButton={false}
+        disableKeyDown
         {...props}
       />
     );

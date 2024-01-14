@@ -1,0 +1,176 @@
+
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>BookingDetails.tsx</title>
+      <link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" type="text/css" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/javascript/javascript.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.css" type="text/css" rel="stylesheet">
+<script src="..\..\..\..\assets\source-file.js" type="text/javascript" charset="utf-8"></script>
+<link href="..\..\..\..\assets\source-file.css" type="text/css" rel="stylesheet">
+    </head>
+    <body>
+    <div style="margin-top:3em" class="ui container"><h1 class="ui header"><a href="..\..\..\..\index.html">TypeScript coverage report</a></h1><table style="margin-top:2em" class="ui celled table"><thead class=""><tr class=""><th class="">Filename</th><th class="">Percent</th><th class="">Threshold</th><th class="">Total</th><th class="">Covered</th><th class="">Uncovered</th></tr></thead><tbody class=""><tr class="positive"><td class="">src\components\BookingDetails\BookingDetails.tsx</td><td class="">100.00%</td><td class="">80%</td><td class="">255</td><td class="">255</td><td class="">0</td></tr></tbody></table><textarea id="editor" readonly="" style="margin-top:3em">import { motion } from &quot;framer-motion&quot;;
+import cn from &quot;classnames&quot;;
+import differenceInCalendarDays from &quot;date-fns/differenceInCalendarDays&quot;;
+
+import styles from &quot;./BookingDetails.module.css&quot;;
+
+interface IBookingDetailsProps {
+  price: number | undefined;
+  title: string | undefined;
+  startDate: Date;
+  endDate: Date | null;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+
+  className?: string;
+}
+
+const animation = {
+  initial: { opacity: 0, filter: &quot;blur(5px)&quot; },
+  animate: { opacity: 1, filter: &quot;blur(0px)&quot; },
+  transition: { duration: 1 },
+};
+
+const BookingDetails = ({
+  price,
+  title,
+  startDate: startDateProp,
+  endDate: endDateProp,
+  name,
+  email,
+  phone,
+  message,
+
+  className,
+}: IBookingDetailsProps) =&gt; {
+  const bookedDays =
+    endDateProp === null
+      ? 0
+      : differenceInCalendarDays(endDateProp ?? new Date(), startDateProp) + 1;
+  const totalCost = price &amp;&amp; bookedDays !== 0 ? bookedDays * price : price;
+
+  const startDate = new Date(startDateProp).toLocaleDateString();
+  const endDate = endDateProp &amp;&amp; new Date(endDateProp).toLocaleDateString();
+
+  return (
+    &lt;div className={cn(styles[&quot;booking-details&quot;], className)}&gt;
+      &lt;span className={styles[&quot;booking-details-title&quot;]}&gt;Summary&lt;/span&gt;
+
+      &lt;table className={styles[&quot;booking-details-table&quot;]}&gt;
+        &lt;tbody&gt;
+          &lt;tr className={styles[&quot;booking-details-row&quot;]}&gt;
+            &lt;td className={styles[&quot;booking-details-cell&quot;]}&gt;Room&lt;/td&gt;
+            &lt;td className={styles[&quot;booking-details-cell&quot;]}&gt;{title ?? &quot;N/A&quot;}&lt;/td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr className={styles[&quot;booking-details-row&quot;]}&gt;
+            &lt;td className={styles[&quot;booking-details-cell&quot;]}&gt;Price&lt;/td&gt;
+            &lt;td className={styles[&quot;booking-details-cell&quot;]}&gt;
+              {price ? price : &quot;N/A&quot;}$ / night
+            &lt;/td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr className={styles[&quot;booking-details-row&quot;]}&gt;
+            &lt;td className={styles[&quot;booking-details-cell&quot;]}&gt;Total cost&lt;/td&gt;
+            &lt;motion.td
+              className={styles[&quot;booking-details-cell&quot;]}
+              key={totalCost}
+              {...animation}
+            &gt;
+              {totalCost ? totalCost : &quot;N/A&quot;}$
+            &lt;/motion.td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr className={styles[&quot;booking-details-row&quot;]}&gt;
+            &lt;td className={styles[&quot;booking-details-cell&quot;]}&gt;Check-in&lt;/td&gt;
+            &lt;motion.td
+              className={styles[&quot;booking-details-cell&quot;]}
+              key={startDate}
+              {...animation}
+            &gt;
+              {startDate ? startDate : &quot;N/A&quot;}
+            &lt;/motion.td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr className={styles[&quot;booking-details-row&quot;]}&gt;
+            &lt;td className={styles[&quot;booking-details-cell&quot;]}&gt;Check-out&lt;/td&gt;
+            &lt;motion.td
+              className={styles[&quot;booking-details-cell&quot;]}
+              key={endDate}
+              {...animation}
+            &gt;
+              {endDate ? endDate : &quot;N/A&quot;}
+            &lt;/motion.td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr className={styles[&quot;booking-details-row&quot;]}&gt;
+            &lt;td className={styles[&quot;booking-details-cell&quot;]}&gt;Total Days&lt;/td&gt;
+            &lt;motion.td
+              className={styles[&quot;booking-details-cell&quot;]}
+              key={bookedDays}
+              {...animation}
+            &gt;
+              {bookedDays ? bookedDays : &quot;0&quot;}
+            &lt;/motion.td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr className={styles[&quot;booking-details-row&quot;]}&gt;
+            &lt;td className={styles[&quot;booking-details-cell&quot;]}&gt;Name&lt;/td&gt;
+            &lt;motion.td
+              className={styles[&quot;booking-details-cell&quot;]}
+              key={name}
+              {...animation}
+            &gt;
+              {name ? name : &quot;N/A&quot;}
+            &lt;/motion.td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr className={styles[&quot;booking-details-row&quot;]}&gt;
+            &lt;td className={styles[&quot;booking-details-cell&quot;]}&gt;Email&lt;/td&gt;
+            &lt;motion.td
+              className={styles[&quot;booking-details-cell&quot;]}
+              key={email}
+              {...animation}
+            &gt;
+              {email ? email : &quot;N/A&quot;}
+            &lt;/motion.td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr className={styles[&quot;booking-details-row&quot;]}&gt;
+            &lt;td className={styles[&quot;booking-details-cell&quot;]}&gt;Phone&lt;/td&gt;
+            &lt;motion.td
+              className={styles[&quot;booking-details-cell&quot;]}
+              key={phone}
+              {...animation}
+            &gt;
+              {phone ? phone : &quot;N/A&quot;}
+            &lt;/motion.td&gt;
+          &lt;/tr&gt;
+
+          &lt;tr className={styles[&quot;booking-details-row&quot;]}&gt;
+            &lt;td className={styles[&quot;booking-details-cell&quot;]}&gt;Message&lt;/td&gt;
+            &lt;motion.td
+              className={styles[&quot;booking-details-cell&quot;]}
+              key={message}
+              {...animation}
+            &gt;
+              {message ? message : &quot;N/A&quot;}
+            &lt;/motion.td&gt;
+          &lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+  );
+};
+
+export default BookingDetails;
+</textarea><pre id="annotations" style="display:none">[]</pre></div>
+    <p class="footer-text">TypeScript Coverage Report generated by <a href="https://github.com/plantain-00/type-coverage">type-coverage</a> and <a href="https://github.com/alexcanessa/typescript-coverage-report">typescript-coverage-report</a> at Sun, 14 Jan 2024 16:01:24 GMT</p>
+    </body>
+  </html>
+  

@@ -1,5 +1,6 @@
 import { Suspense, lazy, useState } from "react";
 import { useTitle } from "ahooks";
+import { ReactImageGalleryItem } from "react-image-gallery";
 
 import Heading from "../../components/Heading/Heading";
 import Room from "../../components/Room/Room";
@@ -79,6 +80,25 @@ const rooms = [
   },
 ];
 
+interface IRoom {
+  id: string;
+  roomId: string;
+  roomPrice: number;
+  title: string;
+  photos: {
+    original: string;
+    thumbnail: string;
+  } extends ReactImageGalleryItem
+    ? Array<ReactImageGalleryItem>
+    : never;
+
+  accordionTitle: string;
+  accordionContentText: string;
+
+  buttonPriceText: string;
+  buttonBookText: string;
+}
+
 const testExcludeDates: [string, string][] = [
   ["2024-01-21T10:45:17.000Z", "2024-01-26T10:45:17.000Z"],
   ["2024-01-31T10:45:17.000Z", "2024-02-03T10:45:17.000Z"],
@@ -89,14 +109,15 @@ const Rooms = (): JSX.Element => {
   useTitle("Luxury Hotels - Rooms");
 
   const [toggleModal, setToggleModal] = useState(false);
-  const [roomId, setRoomId] = useState("");
+  const [selectedRoom, setSelectedRoom] = useState<IRoom>();
 
   const onRoomBookButtonClick = (roomId: string): void => {
-    setRoomId(roomId);
     setToggleModal(true);
 
     const selectedRoom = rooms.find((room) => room.roomId === roomId);
     console.log("RoomId %s", roomId, selectedRoom);
+
+    setSelectedRoom(selectedRoom);
   };
 
   const onCloseModal = (): void => {
@@ -149,7 +170,9 @@ const Rooms = (): JSX.Element => {
 
             <BookingForm
               className={styles["room-booking-details-modal-booking-form"]}
-              roomId={roomId}
+              roomId={selectedRoom?.roomId}
+              roomTitle={selectedRoom?.title}
+              roomPrice={selectedRoom?.roomPrice}
               excludeDates={testExcludeDates}
             />
           </Suspense>
