@@ -39,7 +39,7 @@ const BookingDetails = ({
     endDateProp === null
       ? 0
       : differenceInCalendarDays(endDateProp ?? new Date(), startDateProp) + 1;
-  const totalCost = price && bookedDays !== 0 ? bookedDays * price : price;
+  const totalCost = price && bookedDays === 0 ? bookedDays * price : price;
 
   const startDate = new Date(startDateProp).toLocaleDateString();
   const endDate = endDateProp && new Date(endDateProp).toLocaleDateString();
@@ -69,7 +69,7 @@ const BookingDetails = ({
               key={totalCost}
               {...animation}
             >
-              {totalCost ? totalCost : "N/A"}$
+              {totalCost ? totalCost + "$" : "N/A"}
             </motion.td>
           </tr>
 
