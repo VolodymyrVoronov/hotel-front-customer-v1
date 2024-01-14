@@ -42,6 +42,8 @@
   flex-direction: column;
   justify-content: flex-start;
 
+  overflow: auto;
+
   width: 100%;
 }
 
@@ -53,15 +55,6 @@
   text-transform: uppercase;
 }
 
-.room-booking-details-modal-text {
-  margin-top: 25px;
-
-  font-family: var(--ff-montserrat);
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 16px;
-}
-
-.room-booking-details-modal-date-picker {
-  margin-top: 10px;
+.room-booking-details-modal-booking-form {
+  margin-top: 20px;
 }

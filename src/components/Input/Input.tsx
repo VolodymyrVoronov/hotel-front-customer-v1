@@ -1,12 +1,16 @@
-import { ComponentProps, Ref, forwardRef, useId } from "react";
+import {
+  ComponentProps,
+  HTMLInputTypeAttribute,
+  Ref,
+  forwardRef,
+  useId,
+} from "react";
 import cn from "classnames";
 
 import styles from "./Input.module.css";
 
-type InputType = "text" | "password" | "email";
-
 interface IInputProps extends ComponentProps<"input"> {
-  inputType: InputType;
+  inputType: HTMLInputTypeAttribute;
   labelText?: string;
   showLabel?: boolean;
   classNameWrapper?: string;

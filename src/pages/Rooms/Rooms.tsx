@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { useTitle } from "ahooks";
 
 import Heading from "../../components/Heading/Heading";
@@ -6,9 +6,9 @@ import Room from "../../components/Room/Room";
 import Modal from "../../components/Modal/Modal";
 import ModalContent from "../../components/ModalContent/ModalContent";
 import Loader from "../../components/Loader/Loader";
-import DatePickerComponent from "../../components/DatePicker/DatePicker";
 
 import styles from "./Rooms.module.css";
+import BookingForm from "../../components/BookingForm/BookingForm";
 
 const rooms = [
   {
@@ -76,43 +76,29 @@ const rooms = [
   },
 ];
 
+const testExcludeDates: [string, string][] = [
+  ["2024-01-21T10:45:17.000Z", "2024-01-26T10:45:17.000Z"],
+  ["2024-01-31T10:45:17.000Z", "2024-02-03T10:45:17.000Z"],
+  ["2024-02-07T10:45:17.000Z", "2024-02-10T10:45:17.000Z"],
+];
+
 const Rooms = (): JSX.Element => {
   useTitle("Luxury Hotels - Rooms");
 
   const [toggleModal, setToggleModal] = useState(false);
   const [roomId, setRoomId] = useState("");
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [testExcludeDates, setTestExcludeDates] = useState<
-    Array<[string, string]>
-  >([
-    ["2024-01-21T10:45:17.000Z", "2024-01-26T10:45:17.000Z"],
-    ["2024-01-31T10:45:17.000Z", "2024-02-03T10:45:17.000Z"],
-    ["2024-02-07T10:45:17.000Z", "2024-02-10T10:45:17.000Z"],
-  ]);
 
   const onRoomBookButtonClick = (roomId: string): void => {
     setRoomId(roomId);
     setToggleModal(true);
 
     const selectedRoom = rooms.find((room) => room.roomId === roomId);
-    // console.log("RoomId %s", roomId, selectedRoom);
+    console.log("RoomId %s", roomId, selectedRoom);
   };
 
   const onCloseModal = (): void => {
     setToggleModal(false);
   };
-
-  const onDatePickerChange = (dates: [Date, Date]): void => {
-    setStartDate(dates[0]);
-    setEndDate(dates[1]);
-  };
-
-  useEffect(() => {
-    // console.log("startDate", startDate.toISOString());
-    // console.log("endDate", endDate?.toISOString());
-  }, [startDate, endDate]);
-
 
   return (
     <>
@@ -158,13 +144,9 @@ const Rooms = (): JSX.Element => {
               Booking Details
             </Heading>
 
-            <p className={styles["room-booking-details-modal-text"]}>
-              Chose start date and end date:
-            </p>
-
-            <DatePickerComponent
-              className={styles["room-booking-details-modal-date-picker"]}
-              onDatePickerChange={onDatePickerChange}
+            <BookingForm
+              className={styles["room-booking-details-modal-booking-form"]}
+              roomId={roomId}
               excludeDates={testExcludeDates}
             />
           </Suspense>

@@ -10,6 +10,7 @@ import styles from "./DatePicker.module.css";
 
 interface IDatePickerComponentProps {
   excludeDates?: [string, string][];
+  endDate?: Date | null;
   onDatePickerChange?: (dates: [Date, Date]) => void;
 
   className?: string;
@@ -17,6 +18,7 @@ interface IDatePickerComponentProps {
 
 const DatePickerComponent = ({
   excludeDates: excludeDatesProp,
+  endDate: endDateProp = null,
   onDatePickerChange: onDatePickerChangeProp,
 
   className,
@@ -36,9 +38,11 @@ const DatePickerComponent = ({
     }
   };
 
-  // console.log(startDate.toISOString(), endDate?.toISOString());
-  // console.log("excludeDatesProp", excludeDatesProp);
-  // console.log("excludedDates", excludedDates);
+  useEffect(() => {
+    if (endDateProp === null) {
+      setEndDate(null);
+    }
+  }, [endDateProp]);
 
   useEffect(() => {
     if (excludeDatesProp) {
@@ -76,6 +80,7 @@ const DatePickerComponent = ({
       endDate={endDate}
       excludeDates={excludedDates}
       selectsRange
+      required
     />
   );
 };
