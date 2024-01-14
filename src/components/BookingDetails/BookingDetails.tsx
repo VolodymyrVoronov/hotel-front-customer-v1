@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import cn from "classnames";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
+import format from "date-fns/format";
 
 import styles from "./BookingDetails.module.css";
 
@@ -41,8 +42,8 @@ const BookingDetails = ({
       : differenceInCalendarDays(endDateProp ?? new Date(), startDateProp) + 1;
   const totalCost = price && bookedDays === 0 ? bookedDays * price : price;
 
-  const startDate = new Date(startDateProp).toLocaleDateString();
-  const endDate = endDateProp && new Date(endDateProp).toLocaleDateString();
+  const startDate = format(startDateProp, "dd/MM/yyyy");
+  const endDate = endDateProp && format(endDateProp, "dd/MM/yyyy");
 
   return (
     <div className={cn(styles["booking-details"], className)}>
