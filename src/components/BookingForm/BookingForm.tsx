@@ -40,7 +40,7 @@ const initialFormData = {
 };
 
 const BookingForm = ({
-  roomId,
+  // roomId,
   excludeDates: excludeDatesProp,
   className,
 }: IBookingFormProps): JSX.Element => {
