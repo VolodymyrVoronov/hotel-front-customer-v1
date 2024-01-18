@@ -11,3 +11,5 @@ export const ROUTES = {
   ROOMS: PATHS.ROOMS,
   CONTACT: PATHS.CONTACT,
 } as const;
+
+export const API_URL = "http://localhost:8080";

@@ -1,6 +1,9 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { useTitle } from "ahooks";
 import { ReactImageGalleryItem } from "react-image-gallery";
+import useSWRMutation from "swr/mutation";
+
+import { API_URL } from "../../constants";
 
 import Heading from "../../components/Heading/Heading";
 import Room from "../../components/Room/Room";
@@ -99,30 +102,66 @@ interface IRoom {
   buttonBookText: string;
 }
 
-const testExcludeDates: [string, string][] = [
-  ["2024-01-21T10:45:17.000Z", "2024-01-26T10:45:17.000Z"],
-  ["2024-01-31T10:45:17.000Z", "2024-02-03T10:45:17.000Z"],
-  ["2024-02-07T10:45:17.000Z", "2024-02-10T10:45:17.000Z"],
-];
+// const testExcludeDates: [string, string][] = [
+//   ["2024-01-21T10:45:17.000Z", "2024-01-26T10:45:17.000Z"],
+//   ["2024-01-31T10:45:17.000Z", "2024-02-03T10:45:17.000Z"],
+//   ["2024-02-07T10:45:17.000Z", "2024-02-10T10:45:17.000Z"],
+// ];
+
+async function getRoomInformation(url: string, { arg }: { arg: unknown }) {
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(arg),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Something went wrong!");
+  }
+
+  return data;
+}
 
 const Rooms = (): JSX.Element => {
   useTitle("Luxury Hotels - Rooms");
 
   const [toggleModal, setToggleModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<IRoom>();
+  const [excludedDates, setExcludedDates] = useState<[string, string][]>([]);
+
+  const { trigger, data, isMutating } = useSWRMutation(
+    `${API_URL}/bookings-room`,
+    getRoomInformation
+  );
 
   const onRoomBookButtonClick = (roomId: string): void => {
     setToggleModal(true);
 
     const selectedRoom = rooms.find((room) => room.roomId === roomId);
-    console.log("RoomId %s", roomId, selectedRoom);
 
     setSelectedRoom(selectedRoom);
+
+    trigger({ RoomID: roomId });
   };
 
   const onCloseModal = (): void => {
     setToggleModal(false);
   };
+
+  useEffect(() => {
+    if (!isMutating) {
+      const excludeDates: [string, string][] = [];
+
+      if (data) {
+        for (const element of data) {
+          excludeDates.push([element.StartDate, element.EndDate]);
+        }
+      }
+
+      setExcludedDates(excludeDates);
+    }
+  }, [data, isMutating]);
 
   return (
     <>
@@ -173,7 +212,7 @@ const Rooms = (): JSX.Element => {
               roomId={selectedRoom?.roomId}
               roomTitle={selectedRoom?.title}
               roomPrice={selectedRoom?.roomPrice}
-              excludeDates={testExcludeDates}
+              excludeDates={excludedDates}
             />
           </Suspense>
         </ModalContent>

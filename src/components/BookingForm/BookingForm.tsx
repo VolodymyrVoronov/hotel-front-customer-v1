@@ -8,8 +8,10 @@ import {
 } from "react";
 import cn from "classnames";
 import { useLocalStorageState } from "ahooks";
+import useSWRMutation from "swr/mutation";
 
 import { checkEmptyFields } from "../../helpers";
+import { API_URL } from "../../constants";
 
 import Input from "../Input/Input";
 import Button from "../Button/Button";
@@ -51,13 +53,35 @@ const initialFormData = {
   endDate: null,
 };
 
+async function checkRoomAvailability(url: string, { arg }: { arg: unknown }) {
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(arg),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Something went wrong!");
+  }
+
+  return data;
+}
+
 const BookingForm = ({
-  // roomId,
+  roomId,
   roomTitle,
   roomPrice,
-  excludeDates: excludeDatesProp,
+  excludeDates,
   className,
 }: IBookingFormProps): JSX.Element => {
+  const { trigger, data, isMutating } = useSWRMutation(
+    `${API_URL}/availability`,
+    checkRoomAvailability
+  );
+
+  // console.log(data, isMutating);
+
   const [formDataLocalStorage, setFormDataLocalStorage] =
     useLocalStorageState<IFormData>("form-data-state", {
       defaultValue: initialFormData,
@@ -72,7 +96,7 @@ const BookingForm = ({
   });
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [excludeDates, setExcludeDates] = useState<[string, string][]>([]);
+  const [isRoomAvailable, setIsRoomAvailable] = useState(false);
 
   const onFormSubmit = (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -103,11 +127,14 @@ const BookingForm = ({
     setEndDate(null);
     setFormData(initialFormData);
     setFormDataLocalStorage(initialFormData);
+    setIsRoomAvailable(false);
   };
 
   useEffect(() => {
-    setExcludeDates(excludeDatesProp);
-  }, [excludeDatesProp]);
+    if (data) {
+      setIsRoomAvailable(data.available);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (startDate && endDate) {
@@ -122,8 +149,17 @@ const BookingForm = ({
         startDate,
         endDate,
       });
+
+      trigger({
+        RoomID: roomId,
+        StartDate: startDate,
+        EndDate: endDate,
+      });
     }
   }, [startDate, endDate]);
+
+  console.log("isRoomAvailable", isRoomAvailable);
+  
 
   return (
     <div className={cn(styles["booking-form-wrapper"], className)}>
