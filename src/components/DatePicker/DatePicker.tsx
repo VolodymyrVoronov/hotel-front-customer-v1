@@ -10,6 +10,7 @@ import styles from "./DatePicker.module.css";
 
 interface IDatePickerComponentProps {
   excludeDates?: [string, string][];
+  startDate?: Date | null;
   endDate?: Date | null;
   onDatePickerChange?: (dates: [Date, Date]) => void;
 
@@ -19,12 +20,19 @@ interface IDatePickerComponentProps {
 const DatePickerComponent = memo(
   ({
     excludeDates: excludeDatesProp,
+    startDate: startDateProp = null,
     endDate: endDateProp = null,
     onDatePickerChange: onDatePickerChangeProp,
 
     className,
   }: IDatePickerComponentProps): JSX.Element => {
-    const [startDate, setStartDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(() => {
+      if (startDateProp) {
+        return new Date(startDateProp);
+      } else {
+        return new Date();
+      }
+    });
     const [endDate, setEndDate] = useState<Date | null>(() => {
       if (endDateProp) {
         return new Date(endDateProp);
@@ -46,10 +54,11 @@ const DatePickerComponent = memo(
     };
 
     useEffect(() => {
-      if (endDateProp === null) {
+      if (endDateProp === null || startDateProp === null) {
+        setStartDate(new Date());
         setEndDate(null);
       }
-    }, [endDateProp]);
+    }, [startDateProp, endDateProp]);
 
     useEffect(() => {
       if (excludeDatesProp) {

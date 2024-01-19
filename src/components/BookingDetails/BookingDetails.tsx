@@ -40,7 +40,7 @@ const BookingDetails = ({
     endDateProp === null
       ? 0
       : differenceInCalendarDays(endDateProp ?? new Date(), startDateProp) + 1;
-  const totalCost = price && bookedDays === 0 ? bookedDays * price : price;
+  const totalCost = price && bookedDays !== 0 ? bookedDays * price : price;
 
   const startDate = format(startDateProp, "dd/MM/yyyy");
   const endDate = endDateProp && format(endDateProp, "dd/MM/yyyy");

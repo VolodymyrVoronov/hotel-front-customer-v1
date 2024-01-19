@@ -9,6 +9,7 @@ import {
 import cn from "classnames";
 import { useLocalStorageState } from "ahooks";
 import useSWRMutation from "swr/mutation";
+import { motion } from "framer-motion";
 
 import { checkEmptyFields } from "../../helpers";
 import { API_URL } from "../../constants";
@@ -79,8 +80,6 @@ const BookingForm = ({
     `${API_URL}/availability`,
     checkRoomAvailability
   );
-
-  // console.log(data, isMutating);
 
   const [formDataLocalStorage, setFormDataLocalStorage] =
     useLocalStorageState<IFormData>("form-data-state", {
@@ -158,8 +157,15 @@ const BookingForm = ({
     }
   }, [startDate, endDate]);
 
-  console.log("isRoomAvailable", isRoomAvailable);
-  
+  useEffect(() => {
+    if (formData.startDate && formData.endDate) {
+      trigger({
+        RoomID: roomId,
+        StartDate: formData.startDate,
+        EndDate: formData.endDate,
+      });
+    }
+  }, []);
 
   return (
     <div className={cn(styles["booking-form-wrapper"], className)}>
@@ -180,82 +186,98 @@ const BookingForm = ({
             className={styles["booking-form-date-picker"]}
             onDatePickerChange={onDatePickerChange}
             excludeDates={excludeDates}
+            startDate={formData.startDate}
             endDate={formData.endDate}
           />
         </Suspense>
 
-        <form className={styles["booking-form"]} onSubmit={onFormSubmit}>
-          <label className={styles["booking-form-label"]}>
-            Name{" "}
-            <Input
-              inputType="text"
-              name="name"
-              classNameInput={styles["booking-form-input"]}
-              required
-              value={formData.name}
-              onChange={onInputChange}
-            />
-          </label>
+        {!isRoomAvailable && formData.endDate !== null && !isMutating && (
+          <motion.span
+            className={styles["booking-form-disabled-text"]}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            These dates are not available for booking
+          </motion.span>
+        )}
 
-          <label className={styles["booking-form-label"]}>
-            Email{" "}
-            <Input
-              inputType="email"
-              name="email"
-              classNameInput={styles["booking-form-input"]}
-              required
-              value={formData.email}
-              onChange={onInputChange}
-            />
-          </label>
-
-          <label className={styles["booking-form-label"]}>
-            Phone{" "}
-            <Input
-              inputType="tel"
-              name="phone"
-              classNameInput={styles["booking-form-input"]}
-              required
-              value={formData.phone}
-              onChange={onInputChange}
-              pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-            />
-            <small>Format: 123-456-7890</small>
-          </label>
-
-          <label className={styles["booking-form-label"]}>
-            Message{" "}
-            <textarea
-              name="message"
-              className={styles["booking-form-area"]}
-              rows={5}
-              required
-              value={formData.message}
-              onChange={onInputChange}
-            />
-          </label>
-
-          <div className={styles["booking-form-buttons"]}>
-            <Button
-              className={styles["booking-form-button"]}
-              disabled={!checkEmptyFields(formData, "every")}
-              hasIcon={false}
-              type="submit"
-              title="Book"
-            >
-              Book
-            </Button>
-
-            <IconButton
-              onClick={onClearButtonClick}
-              type="button"
-              title="clear"
-              iconSrc="/icons/plus-icon.svg"
-              iconAlt="close"
-              className={styles["booking-form-button-clear"]}
-            />
-          </div>
-        </form>
+        <fieldset
+          disabled={!isRoomAvailable && !isMutating}
+          className={cn({
+            [styles["booking-form-disabled"]]: !isRoomAvailable && !isMutating,
+          })}
+        >
+          <form className={styles["booking-form"]} onSubmit={onFormSubmit}>
+            <label className={styles["booking-form-label"]}>
+              Name{" "}
+              <Input
+                inputType="text"
+                name="name"
+                classNameInput={styles["booking-form-input"]}
+                required
+                value={formData.name}
+                onChange={onInputChange}
+              />
+            </label>
+            <label className={styles["booking-form-label"]}>
+              Email{" "}
+              <Input
+                inputType="email"
+                name="email"
+                classNameInput={styles["booking-form-input"]}
+                required
+                value={formData.email}
+                onChange={onInputChange}
+              />
+            </label>
+            <label className={styles["booking-form-label"]}>
+              Phone{" "}
+              <Input
+                inputType="tel"
+                name="phone"
+                classNameInput={styles["booking-form-input"]}
+                required
+                value={formData.phone}
+                onChange={onInputChange}
+                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+              />
+              <small>Format: 123-456-7890</small>
+            </label>
+            <label className={styles["booking-form-label"]}>
+              Message{" "}
+              <textarea
+                name="message"
+                className={styles["booking-form-area"]}
+                rows={5}
+                required
+                value={formData.message}
+                onChange={onInputChange}
+              />
+            </label>
+            <div className={styles["booking-form-buttons"]}>
+              <Button
+                className={styles["booking-form-button"]}
+                disabled={!checkEmptyFields(formData, "every")}
+                hasIcon={false}
+                type="submit"
+                title="Book"
+              >
+                Book
+              </Button>
+              <IconButton
+                onClick={onClearButtonClick}
+                disabled={!isRoomAvailable}
+                type="button"
+                title="clear"
+                iconSrc="/icons/plus-icon.svg"
+                iconAlt="close"
+                className={styles["booking-form-button-clear"]}
+              />
+            </div>
+          </form>
+        </fieldset>
       </div>
 
       <div className={styles["booking-form-right"]}>
