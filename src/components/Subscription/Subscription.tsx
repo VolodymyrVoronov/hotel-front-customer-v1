@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 import { z } from "zod";
-import { ToastContainer, ToastOptions, toast } from "react-toastify";
+import { ToastOptions, toast } from "react-toastify";
 import { useKeyPress } from "ahooks";
 
 import Button from "../Button/Button";
@@ -58,33 +58,28 @@ const Subscription = (): JSX.Element => {
   });
 
   return (
-    <>
-      <ToastContainer />
-      <div className={styles["subscription-wrapper"]}>
-        <p className={styles["subscription-text"]}>
-          Subscribe to our newsletter
-        </p>
-        <div className={styles["subscription-form"]}>
-          <Input
-            onChange={onInputChange}
-            value={email}
-            inputType="email"
-            placeholder="Email address"
-            classNameWrapper={styles["subscription-input-wrapper"]}
-            classNameInput={styles["subscription-input"]}
-          />
+    <div className={styles["subscription-wrapper"]}>
+      <p className={styles["subscription-text"]}>Subscribe to our newsletter</p>
+      <div className={styles["subscription-form"]}>
+        <Input
+          onChange={onInputChange}
+          value={email}
+          inputType="email"
+          placeholder="Email address"
+          classNameWrapper={styles["subscription-input-wrapper"]}
+          classNameInput={styles["subscription-input"]}
+        />
 
-          <Button
-            onClick={onSubscribeButtonClick}
-            className={styles["subscription-button"]}
-            hasIcon={false}
-            disabled={email.length === 0}
-          >
-            OK
-          </Button>
-        </div>
+        <Button
+          onClick={onSubscribeButtonClick}
+          className={styles["subscription-button"]}
+          hasIcon={false}
+          disabled={email.length === 0}
+        >
+          OK
+        </Button>
       </div>
-    </>
+    </div>
   );
 };
 

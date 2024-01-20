@@ -7,7 +7,7 @@ import {
 } from "react";
 import cn from "classnames";
 import { z } from "zod";
-import { ToastContainer, ToastOptions, toast } from "react-toastify";
+import { ToastOptions, toast } from "react-toastify";
 import { useKeyPress } from "ahooks";
 
 import { checkEmptyFields } from "../../helpers";
@@ -92,61 +92,58 @@ const ContactForm = forwardRef(
     });
 
     return (
-      <>
-        <ToastContainer />
-        <form
-          ref={ref}
-          className={cn(styles["contact-form"], className)}
-          onSubmit={onFormSubmit}
-          {...props}
+      <form
+        ref={ref}
+        className={cn(styles["contact-form"], className)}
+        onSubmit={onFormSubmit}
+        {...props}
+      >
+        <label className={styles["contact-form-label"]}>
+          Name{" "}
+          <Input
+            inputType="text"
+            name="name"
+            classNameWrapper={styles["contact-form-wrapper"]}
+            classNameInput={styles["contact-form-input"]}
+            required
+            value={formData.name}
+            onChange={onInputChange}
+          />
+        </label>
+
+        <label className={styles["contact-form-label"]}>
+          Email{" "}
+          <Input
+            inputType="email"
+            name="email"
+            classNameWrapper={styles["contact-form-wrapper"]}
+            classNameInput={styles["contact-form-input"]}
+            required
+            value={formData.email}
+            onChange={onInputChange}
+          />
+        </label>
+
+        <label className={styles["contact-form-label"]}>
+          Message{" "}
+          <textarea
+            name="message"
+            className={styles["contact-form-area"]}
+            rows={15}
+            required
+            value={formData.message}
+            onChange={onInputChange}
+          />
+        </label>
+
+        <Button
+          disabled={!checkEmptyFields(formData, "every")}
+          className={styles["contact-form-button"]}
+          hasIcon={false}
         >
-          <label className={styles["contact-form-label"]}>
-            Name{" "}
-            <Input
-              inputType="text"
-              name="name"
-              classNameWrapper={styles["contact-form-wrapper"]}
-              classNameInput={styles["contact-form-input"]}
-              required
-              value={formData.name}
-              onChange={onInputChange}
-            />
-          </label>
-
-          <label className={styles["contact-form-label"]}>
-            Email{" "}
-            <Input
-              inputType="email"
-              name="email"
-              classNameWrapper={styles["contact-form-wrapper"]}
-              classNameInput={styles["contact-form-input"]}
-              required
-              value={formData.email}
-              onChange={onInputChange}
-            />
-          </label>
-
-          <label className={styles["contact-form-label"]}>
-            Message{" "}
-            <textarea
-              name="message"
-              className={styles["contact-form-area"]}
-              rows={15}
-              required
-              value={formData.message}
-              onChange={onInputChange}
-            />
-          </label>
-
-          <Button
-            disabled={!checkEmptyFields(formData, "every")}
-            className={styles["contact-form-button"]}
-            hasIcon={false}
-          >
-            Submit
-          </Button>
-        </form>
-      </>
+          Submit
+        </Button>
+      </form>
     );
   }
 );

@@ -10,9 +10,11 @@ import cn from "classnames";
 import { useLocalStorageState } from "ahooks";
 import useSWRMutation from "swr/mutation";
 import { motion } from "framer-motion";
+import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
+import { ToastOptions, toast } from "react-toastify";
 
 import { checkEmptyFields } from "../../helpers";
-import { API_URL } from "../../constants";
+import { API_URL, ROUTES } from "../../constants";
 
 import Input from "../Input/Input";
 import Button from "../Button/Button";
@@ -27,6 +29,7 @@ const BookingDetails = lazy(
 );
 
 import styles from "./BookingForm.module.css";
+import { Link } from "react-router-dom";
 
 interface IBookingFormProps {
   roomId: string | undefined;
@@ -54,7 +57,7 @@ const initialFormData = {
   endDate: null,
 };
 
-async function checkRoomAvailability(url: string, { arg }: { arg: unknown }) {
+async function postCheckAvailability(url: string, { arg }: { arg: unknown }) {
   const response = await fetch(url, {
     method: "POST",
     body: JSON.stringify(arg),
@@ -69,6 +72,44 @@ async function checkRoomAvailability(url: string, { arg }: { arg: unknown }) {
   return data;
 }
 
+async function postBookRoom(url: string, { arg }: { arg: unknown }) {
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(arg),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Something went wrong!");
+  }
+
+  return data;
+}
+
+const toastConfig = {
+  position: "top-right",
+  autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  theme: "light",
+} satisfies ToastOptions;
+
+const toastSuccess = (message: string): void => {
+  toast.success(message, {
+    ...toastConfig,
+  });
+};
+
+const toastError = (message: string): void => {
+  toast.error(message, {
+    ...toastConfig,
+  });
+};
+
 const BookingForm = ({
   roomId,
   roomTitle,
@@ -76,9 +117,15 @@ const BookingForm = ({
   excludeDates,
   className,
 }: IBookingFormProps): JSX.Element => {
-  const { trigger, data, isMutating } = useSWRMutation(
-    `${API_URL}/availability`,
-    checkRoomAvailability
+  const {
+    trigger: checkAvailability,
+    data: availabilityData,
+    isMutating: isLoadingAvailability,
+  } = useSWRMutation(`${API_URL}/availability`, postCheckAvailability);
+
+  const { trigger: bookRoom, isMutating: isLoadingBookRoom } = useSWRMutation(
+    `${API_URL}/bookings`,
+    postBookRoom
   );
 
   const [formDataLocalStorage, setFormDataLocalStorage] =
@@ -96,11 +143,49 @@ const BookingForm = ({
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [isRoomAvailable, setIsRoomAvailable] = useState(false);
+  const [showBackToHomeButton, setShowBackToHomeButton] = useState(false);
 
-  const onFormSubmit = (e: ChangeEvent<HTMLFormElement>) => {
+  const onFormSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log(formData);
+    const bookedDays =
+      formData.endDate === null
+        ? 0
+        : differenceInCalendarDays(
+            formData.endDate ?? new Date(),
+            formData.startDate
+          ) + 1;
+
+    const totalCost =
+      roomPrice && bookedDays !== 0 ? bookedDays * roomPrice : roomPrice;
+
+    const newBooking = {
+      RoomID: roomId,
+      RoomPrice: roomPrice,
+      TotalPrice: totalCost,
+      TotalBookedDays: bookedDays,
+      Name: formData.name,
+      Email: formData.email,
+      Phone: formData.phone,
+      Message: formData.message,
+      StartDate: formData.startDate,
+      EndDate: formData.endDate,
+    };
+
+    const res = (await bookRoom(newBooking)) as {
+      booked: boolean;
+      message: string;
+    };
+
+    if (!isLoadingBookRoom && res?.booked) {
+      toastSuccess(res.message);
+      setFormData(initialFormData);
+      setFormDataLocalStorage(initialFormData);
+      setIsRoomAvailable(false);
+      setShowBackToHomeButton(true);
+    } else {
+      toastError(res.message);
+    }
   };
 
   const onInputChange = (
@@ -130,10 +215,10 @@ const BookingForm = ({
   };
 
   useEffect(() => {
-    if (data) {
-      setIsRoomAvailable(data.available);
+    if (availabilityData) {
+      setIsRoomAvailable(availabilityData.available);
     }
-  }, [data]);
+  }, [availabilityData]);
 
   useEffect(() => {
     if (startDate && endDate) {
@@ -149,7 +234,7 @@ const BookingForm = ({
         endDate,
       });
 
-      trigger({
+      checkAvailability({
         RoomID: roomId,
         StartDate: startDate,
         EndDate: endDate,
@@ -159,7 +244,7 @@ const BookingForm = ({
 
   useEffect(() => {
     if (formData.startDate && formData.endDate) {
-      trigger({
+      checkAvailability({
         RoomID: roomId,
         StartDate: formData.startDate,
         EndDate: formData.endDate,
@@ -191,22 +276,25 @@ const BookingForm = ({
           />
         </Suspense>
 
-        {!isRoomAvailable && formData.endDate !== null && !isMutating && (
-          <motion.span
-            className={styles["booking-form-disabled-text"]}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            These dates are not available for booking
-          </motion.span>
-        )}
+        {!isRoomAvailable &&
+          formData.endDate !== null &&
+          !isLoadingAvailability && (
+            <motion.span
+              className={styles["booking-form-disabled-text"]}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              These dates are not available for booking
+            </motion.span>
+          )}
 
         <fieldset
-          disabled={!isRoomAvailable && !isMutating}
+          disabled={!isRoomAvailable && !isLoadingAvailability}
           className={cn({
-            [styles["booking-form-disabled"]]: !isRoomAvailable && !isMutating,
+            [styles["booking-form-disabled"]]:
+              !isRoomAvailable && !isLoadingAvailability,
           })}
         >
           <form className={styles["booking-form"]} onSubmit={onFormSubmit}>
@@ -295,6 +383,12 @@ const BookingForm = ({
           />
         </Suspense>
       </div>
+
+      {showBackToHomeButton && (
+        <Link to={ROUTES.HOME} className={styles["booking-form-link"]}>
+          Back to home
+        </Link>
+      )}
     </div>
   );
 };

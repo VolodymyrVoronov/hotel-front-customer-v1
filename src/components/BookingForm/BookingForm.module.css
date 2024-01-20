@@ -54,7 +54,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   margin-bottom: 20px;
 
   font-family: var(--ff-montserrat);
@@ -142,5 +142,23 @@
 
   img {
     transform: rotate(45deg);
+  }
+}
+
+.booking-form-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-family: var(--ff-montserrat);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 24px;
+  color: var(--black);
+
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
   }
 }

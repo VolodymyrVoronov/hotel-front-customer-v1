@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { SWRConfig } from "swr";
+import { ToastContainer } from "react-toastify";
 
 import Main from "./layout/Main/Main";
 import Home from "./pages/Home/Home";
@@ -63,6 +64,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+    <ToastContainer />
+
     <SWRConfig
       value={{
         refreshInterval: 3000,

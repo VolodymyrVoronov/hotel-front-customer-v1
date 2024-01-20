@@ -102,12 +102,6 @@ interface IRoom {
   buttonBookText: string;
 }
 
-// const testExcludeDates: [string, string][] = [
-//   ["2024-01-21T10:45:17.000Z", "2024-01-26T10:45:17.000Z"],
-//   ["2024-01-31T10:45:17.000Z", "2024-02-03T10:45:17.000Z"],
-//   ["2024-02-07T10:45:17.000Z", "2024-02-10T10:45:17.000Z"],
-// ];
-
 async function getRoomInformation(url: string, { arg }: { arg: unknown }) {
   const response = await fetch(url, {
     method: "POST",
