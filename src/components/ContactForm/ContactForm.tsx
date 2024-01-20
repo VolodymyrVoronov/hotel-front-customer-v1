@@ -46,14 +46,14 @@ const toastConfig = {
   theme: "light",
 } satisfies ToastOptions;
 
-const toastSuccess = (): void => {
-  toast.success("Thank you for subscribing!", {
+const toastSuccess = (message: string): void => {
+  toast.success(message, {
     ...toastConfig,
   });
 };
 
-const toastError = (): void => {
-  toast.error("Please enter a valid email", {
+const toastError = (message: string): void => {
+  toast.error(message, {
     ...toastConfig,
   });
 };
@@ -69,6 +69,7 @@ const ContactForm = forwardRef(
       e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
       const { name, value } = e.target;
+
       setFormData({ ...formData, [name]: value });
     };
 
@@ -78,10 +79,12 @@ const ContactForm = forwardRef(
       const checkEmailResult = emailSchema.safeParse(formData.email);
 
       if (checkEmailResult.success) {
-        toastSuccess();
+        console.log(formData);
+
+        toastSuccess("Thank you for contacting us!");
         setFormData(initialFormData);
       } else {
-        toastError();
+        toastError("Please enter a valid email");
       }
     };
 
