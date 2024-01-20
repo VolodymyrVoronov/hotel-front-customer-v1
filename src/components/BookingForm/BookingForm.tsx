@@ -160,34 +160,40 @@ const BookingForm = ({
     const totalCost =
       roomPrice && bookedDays !== 0 ? bookedDays * roomPrice : roomPrice;
 
-    const newBooking = {
-      RoomID: roomId,
-      RoomPrice: roomPrice,
-      TotalPrice: totalCost,
-      TotalBookedDays: bookedDays,
-      Name: formData.name,
-      Email: formData.email,
-      Phone: formData.phone,
-      Message: formData.message,
-      StartDate: formData.startDate,
-      EndDate: formData.endDate,
-    } as IBookRoomRequest;
+    try {
+      const newBooking = {
+        RoomID: roomId,
+        RoomPrice: roomPrice,
+        TotalPrice: totalCost,
+        TotalBookedDays: bookedDays,
+        Name: formData.name,
+        Email: formData.email,
+        Phone: formData.phone,
+        Message: formData.message,
+        StartDate: formData.startDate,
+        EndDate: formData.endDate,
+      } as IBookRoomRequest;
 
-    const res = (await bookRoom(newBooking)) as {
-      booked: boolean;
-      message: string;
-    };
+      const res = (await bookRoom(newBooking)) as {
+        booked: boolean;
+        message: string;
+      };
 
-    if (!isLoadingBookRoom && res?.booked) {
-      toastSuccess(res.message);
-      setFormData(initialFormData);
-      setFormDataLocalStorage(initialFormData);
-      setStartDate(new Date());
-      setEndDate(null);
-      setIsRoomAvailable(false);
-      setShowBackToHomeButton(true);
-    } else {
-      toastError(res.message);
+      if (!isLoadingBookRoom && res?.booked) {
+        toastSuccess(res.message);
+        setFormData(initialFormData);
+        setFormDataLocalStorage(initialFormData);
+        setStartDate(new Date());
+        setEndDate(null);
+        setIsRoomAvailable(false);
+        setShowBackToHomeButton(true);
+      } else {
+        toastError(res.message);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toastError(error.message);
+      }
     }
   };
 
@@ -241,6 +247,8 @@ const BookingForm = ({
         RoomID: roomId,
         StartDate: startDate,
         EndDate: endDate,
+      }).catch(() => {
+        toastError("Something went wrong. Please try again later");
       });
     }
   }, [startDate, endDate]);
@@ -251,6 +259,8 @@ const BookingForm = ({
         RoomID: roomId,
         StartDate: formData.startDate,
         EndDate: formData.endDate,
+      }).catch(() => {
+        toastError("Something went wrong. Please try again later");
       });
     }
   }, []);

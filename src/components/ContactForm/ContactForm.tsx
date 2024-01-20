@@ -9,8 +9,10 @@ import cn from "classnames";
 import { z } from "zod";
 import { ToastOptions, toast } from "react-toastify";
 import { useKeyPress } from "ahooks";
+import useSWRMutation from "swr/mutation";
 
-import { checkEmptyFields } from "../../helpers";
+import { API_URL } from "../../constants";
+import { checkEmptyFields, postRequest } from "../../helpers";
 
 import Button from "../Button/Button";
 import Input from "../Input/Input";
@@ -32,6 +34,16 @@ const initialFormData = {
   email: "",
   message: "",
 };
+
+interface IContactUsRequest {
+  Name: string;
+  Email: string;
+  Message: string;
+}
+
+interface IContactUsResponse {
+  message: string;
+}
 
 const emailSchema = z.string().email();
 
@@ -63,6 +75,12 @@ const ContactForm = forwardRef(
     { className, ...props }: IContactFormProps,
     ref: ForwardedRef<HTMLFormElement>
   ) => {
+    const { trigger: contactUs, isMutating: isLoadingContactUs } =
+      useSWRMutation(
+        `${API_URL}/contact-us`,
+        postRequest<IContactUsRequest, IContactUsResponse>
+      );
+
     const [formData, setFormData] = useState<IFormData>(initialFormData);
 
     const onInputChange = (
@@ -73,16 +91,33 @@ const ContactForm = forwardRef(
       setFormData({ ...formData, [name]: value });
     };
 
-    const onFormSubmit = (e: ChangeEvent<HTMLFormElement>) => {
+    const onFormSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       const checkEmailResult = emailSchema.safeParse(formData.email);
 
       if (checkEmailResult.success) {
-        console.log(formData);
+        try {
+          const newMessage = {
+            Name: formData.name,
+            Email: formData.email,
+            Message: formData.message,
+          };
 
-        toastSuccess("Thank you for contacting us!");
-        setFormData(initialFormData);
+          const res = await contactUs(newMessage);
+
+          if (!res) {
+            toastError("Something went wrong. Please try again later.");
+            return;
+          }
+
+          toastSuccess(res.message);
+          setFormData(initialFormData);
+        } catch (error) {
+          if (error instanceof Error) {
+            toastError(error.message);
+          }
+        }
       } else {
         toastError("Please enter a valid email");
       }
@@ -140,7 +175,7 @@ const ContactForm = forwardRef(
         </label>
 
         <Button
-          disabled={!checkEmptyFields(formData, "every")}
+          disabled={!checkEmptyFields(formData, "every") || isLoadingContactUs}
           className={styles["contact-form-button"]}
           hasIcon={false}
         >
