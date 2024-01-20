@@ -2,11 +2,23 @@ import { ChangeEvent, useState } from "react";
 import { z } from "zod";
 import { ToastOptions, toast } from "react-toastify";
 import { useKeyPress } from "ahooks";
+import useSWRMutation from "swr/mutation";
+
+import { API_URL } from "../../constants";
+import { postRequest } from "../../helpers";
 
 import Button from "../Button/Button";
 import Input from "../Input/Input";
 
 import styles from "./Subscription.module.css";
+
+interface ISubscriptionRequest {
+  Email: string;
+}
+
+interface ISubscriptionResponse {
+  message: string;
+}
 
 const emailSchema = z.string().email();
 
@@ -21,33 +33,54 @@ const toastConfig = {
   theme: "light",
 } satisfies ToastOptions;
 
-const toastSuccess = (): void => {
-  toast.success("Thank you for subscribing!", {
+const toastSuccess = (message: string): void => {
+  toast.success(message, {
     ...toastConfig,
   });
 };
 
-const toastError = (): void => {
-  toast.error("Please enter a valid email", {
+const toastError = (message: string): void => {
+  toast.error(message, {
     ...toastConfig,
   });
 };
 
 const Subscription = (): JSX.Element => {
+  const { trigger: subscribe, isMutating: isLoadingSubscribe } = useSWRMutation(
+    `${API_URL}/subscription`,
+    postRequest<ISubscriptionRequest, ISubscriptionResponse>
+  );
+
   const [email, setEmail] = useState("");
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setEmail(e.target.value);
   };
 
-  const onSubscribeButtonClick = (): void => {
+  const onSubscribeButtonClick = async (): Promise<void> => {
     const checkEmailResult = emailSchema.safeParse(email);
 
     if (checkEmailResult.success) {
-      toastSuccess();
-      setEmail("");
+      try {
+        const res = await subscribe({
+          Email: email,
+        });
+
+        if (!res) {
+          toastError("Something went wrong. Please try again later.");
+          return;
+        }
+
+        toastSuccess(res.message);
+        setEmail("");
+      } catch (error) {
+        if (error instanceof Error) {
+          toastError(error.message);
+          setEmail("");
+        }
+      }
     } else {
-      toastError();
+      toastError("Invalid email address");
     }
   };
 
@@ -74,7 +107,7 @@ const Subscription = (): JSX.Element => {
           onClick={onSubscribeButtonClick}
           className={styles["subscription-button"]}
           hasIcon={false}
-          disabled={email.length === 0}
+          disabled={email.length === 0 || isLoadingSubscribe}
         >
           OK
         </Button>
