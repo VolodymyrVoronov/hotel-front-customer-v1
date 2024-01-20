@@ -1,3 +1,5 @@
+import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
+
 /**
  * Checks if the current pathname matches the pathname to check.
  *
@@ -32,4 +34,20 @@ export const checkEmptyFields = <T extends object>(
   method: "some" | "every" = "some"
 ): boolean => {
   return Object.values(data)[method]((value) => value !== "");
+};
+
+/**
+ * Calculates the number of booked days between a start date and an end date.
+ *
+ * @param {Date} startDate - the start date
+ * @param {Date | null} endDate - the end date, can be null if booking is ongoing
+ * @return {number} the number of booked days
+ */
+export const calculateBookedDays = (
+  startDate: Date,
+  endDate: Date | null
+): number => {
+  return endDate === null
+    ? 0
+    : differenceInCalendarDays(endDate ?? new Date(), startDate) + 1;
 };

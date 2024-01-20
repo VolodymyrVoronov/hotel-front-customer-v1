@@ -6,14 +6,14 @@ import {
   lazy,
   useCallback,
 } from "react";
+import { Link } from "react-router-dom";
 import cn from "classnames";
 import { useLocalStorageState } from "ahooks";
 import useSWRMutation from "swr/mutation";
 import { motion } from "framer-motion";
-import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 import { ToastOptions, toast } from "react-toastify";
 
-import { checkEmptyFields } from "../../helpers";
+import { calculateBookedDays, checkEmptyFields } from "../../helpers";
 import { API_URL, ROUTES } from "../../constants";
 
 import Input from "../Input/Input";
@@ -29,7 +29,6 @@ const BookingDetails = lazy(
 );
 
 import styles from "./BookingForm.module.css";
-import { Link } from "react-router-dom";
 
 interface IBookingFormProps {
   roomId: string | undefined;
@@ -57,25 +56,29 @@ const initialFormData = {
   endDate: null,
 };
 
-async function postCheckAvailability(url: string, { arg }: { arg: unknown }) {
-  const response = await fetch(url, {
-    method: "POST",
-    body: JSON.stringify(arg),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Something went wrong!");
-  }
-
-  return data;
+interface ICheckAvailabilityRequest {
+  RoomID: string | undefined;
+  StartDate: Date;
+  EndDate: Date | null;
 }
 
-async function postBookRoom(url: string, { arg }: { arg: unknown }) {
+interface IBookRoomRequest {
+  RoomID: string;
+  RoomPrice: number;
+  TotalPrice: number;
+  TotalBookedDays: number;
+  Name: string;
+  Email: string;
+  Phone: string;
+  Message: string;
+  StartDate: Date;
+  EndDate: Date;
+}
+
+async function postRequest<T>(url: string, { arg }: { arg: T }) {
   const response = await fetch(url, {
     method: "POST",
-    body: JSON.stringify(arg),
+    body: JSON.stringify({ ...arg }),
   });
 
   const data = await response.json();
@@ -121,11 +124,14 @@ const BookingForm = ({
     trigger: checkAvailability,
     data: availabilityData,
     isMutating: isLoadingAvailability,
-  } = useSWRMutation(`${API_URL}/availability`, postCheckAvailability);
+  } = useSWRMutation(
+    `${API_URL}/availability`,
+    postRequest<ICheckAvailabilityRequest>
+  );
 
   const { trigger: bookRoom, isMutating: isLoadingBookRoom } = useSWRMutation(
     `${API_URL}/bookings`,
-    postBookRoom
+    postRequest<IBookRoomRequest>
   );
 
   const [formDataLocalStorage, setFormDataLocalStorage] =
@@ -148,13 +154,10 @@ const BookingForm = ({
   const onFormSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const bookedDays =
-      formData.endDate === null
-        ? 0
-        : differenceInCalendarDays(
-            formData.endDate ?? new Date(),
-            formData.startDate
-          ) + 1;
+    const bookedDays = calculateBookedDays(
+      formData.startDate,
+      formData.endDate
+    );
 
     const totalCost =
       roomPrice && bookedDays !== 0 ? bookedDays * roomPrice : roomPrice;
@@ -170,7 +173,7 @@ const BookingForm = ({
       Message: formData.message,
       StartDate: formData.startDate,
       EndDate: formData.endDate,
-    };
+    } as IBookRoomRequest;
 
     const res = (await bookRoom(newBooking)) as {
       booked: boolean;
