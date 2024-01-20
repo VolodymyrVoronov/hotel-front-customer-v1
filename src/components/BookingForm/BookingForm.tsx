@@ -13,7 +13,11 @@ import useSWRMutation from "swr/mutation";
 import { motion } from "framer-motion";
 import { ToastOptions, toast } from "react-toastify";
 
-import { calculateBookedDays, checkEmptyFields } from "../../helpers";
+import {
+  calculateBookedDays,
+  checkEmptyFields,
+  postRequest,
+} from "../../helpers";
 import { API_URL, ROUTES } from "../../constants";
 
 import Input from "../Input/Input";
@@ -62,6 +66,10 @@ interface ICheckAvailabilityRequest {
   EndDate: Date | null;
 }
 
+interface ICheckAvailabilityResponse {
+  available: boolean;
+}
+
 interface IBookRoomRequest {
   RoomID: string;
   RoomPrice: number;
@@ -75,19 +83,9 @@ interface IBookRoomRequest {
   EndDate: Date;
 }
 
-async function postRequest<T>(url: string, { arg }: { arg: T }) {
-  const response = await fetch(url, {
-    method: "POST",
-    body: JSON.stringify({ ...arg }),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Something went wrong!");
-  }
-
-  return data;
+interface IBookRoomResponse {
+  booked: boolean;
+  message: string;
 }
 
 const toastConfig = {
@@ -126,12 +124,12 @@ const BookingForm = ({
     isMutating: isLoadingAvailability,
   } = useSWRMutation(
     `${API_URL}/availability`,
-    postRequest<ICheckAvailabilityRequest>
+    postRequest<ICheckAvailabilityRequest, ICheckAvailabilityResponse>
   );
 
   const { trigger: bookRoom, isMutating: isLoadingBookRoom } = useSWRMutation(
     `${API_URL}/bookings`,
-    postRequest<IBookRoomRequest>
+    postRequest<IBookRoomRequest, IBookRoomResponse>
   );
 
   const [formDataLocalStorage, setFormDataLocalStorage] =
@@ -184,6 +182,8 @@ const BookingForm = ({
       toastSuccess(res.message);
       setFormData(initialFormData);
       setFormDataLocalStorage(initialFormData);
+      setStartDate(new Date());
+      setEndDate(null);
       setIsRoomAvailable(false);
       setShowBackToHomeButton(true);
     } else {
