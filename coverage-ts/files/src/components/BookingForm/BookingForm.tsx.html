@@ -11,7 +11,7 @@
 <link href="..\..\..\..\assets\source-file.css" type="text/css" rel="stylesheet">
     </head>
     <body>
-    <div style="margin-top:3em" class="ui container"><h1 class="ui header"><a href="..\..\..\..\index.html">TypeScript coverage report</a></h1><table style="margin-top:2em" class="ui celled table"><thead class=""><tr class=""><th class="">Filename</th><th class="">Percent</th><th class="">Threshold</th><th class="">Total</th><th class="">Covered</th><th class="">Uncovered</th></tr></thead><tbody class=""><tr class="positive"><td class="">src\components\BookingForm\BookingForm.tsx</td><td class="">100.00%</td><td class="">80%</td><td class="">293</td><td class="">293</td><td class="">0</td></tr></tbody></table><textarea id="editor" readonly="" style="margin-top:3em">import {
+    <div style="margin-top:3em" class="ui container"><h1 class="ui header"><a href="..\..\..\..\index.html">TypeScript coverage report</a></h1><table style="margin-top:2em" class="ui celled table"><thead class=""><tr class=""><th class="">Filename</th><th class="">Percent</th><th class="">Threshold</th><th class="">Total</th><th class="">Covered</th><th class="">Uncovered</th></tr></thead><tbody class=""><tr class="positive"><td class="">src\components\BookingForm\BookingForm.tsx</td><td class="">100.00%</td><td class="">80%</td><td class="">508</td><td class="">508</td><td class="">0</td></tr></tbody></table><textarea id="editor" readonly="" style="margin-top:3em">import {
   ChangeEvent,
   useEffect,
   useState,
@@ -19,10 +19,19 @@
   lazy,
   useCallback,
 } from &quot;react&quot;;
+import { Link } from &quot;react-router-dom&quot;;
 import cn from &quot;classnames&quot;;
 import { useLocalStorageState } from &quot;ahooks&quot;;
+import useSWRMutation from &quot;swr/mutation&quot;;
+import { motion } from &quot;framer-motion&quot;;
+import { ToastOptions, toast } from &quot;react-toastify&quot;;
 
-import { checkEmptyFields } from &quot;../../helpers&quot;;
+import {
+  calculateBookedDays,
+  checkEmptyFields,
+  postRequest,
+} from &quot;../../helpers&quot;;
+import { API_URL, ROUTES } from &quot;../../constants&quot;;
 
 import Input from &quot;../Input/Input&quot;;
 import Button from &quot;../Button/Button&quot;;
@@ -64,13 +73,78 @@ const initialFormData = {
   endDate: null,
 };
 
+interface ICheckAvailabilityRequest {
+  RoomID: string | undefined;
+  StartDate: Date;
+  EndDate: Date | null;
+}
+
+interface ICheckAvailabilityResponse {
+  available: boolean;
+}
+
+interface IBookRoomRequest {
+  RoomID: string;
+  RoomPrice: number;
+  TotalPrice: number;
+  TotalBookedDays: number;
+  Name: string;
+  Email: string;
+  Phone: string;
+  Message: string;
+  StartDate: Date;
+  EndDate: Date;
+}
+
+interface IBookRoomResponse {
+  booked: boolean;
+  message: string;
+}
+
+const toastConfig = {
+  position: &quot;top-right&quot;,
+  autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  theme: &quot;light&quot;,
+} satisfies ToastOptions;
+
+const toastSuccess = (message: string): void =&gt; {
+  toast.success(message, {
+    ...toastConfig,
+  });
+};
+
+const toastError = (message: string): void =&gt; {
+  toast.error(message, {
+    ...toastConfig,
+  });
+};
+
 const BookingForm = ({
-  // roomId,
+  roomId,
   roomTitle,
   roomPrice,
-  excludeDates: excludeDatesProp,
+  excludeDates,
   className,
 }: IBookingFormProps): JSX.Element =&gt; {
+  const {
+    trigger: checkAvailability,
+    data: availabilityData,
+    isMutating: isLoadingAvailability,
+  } = useSWRMutation(
+    `${API_URL}/availability`,
+    postRequest&lt;ICheckAvailabilityRequest, ICheckAvailabilityResponse&gt;
+  );
+
+  const { trigger: bookRoom, isMutating: isLoadingBookRoom } = useSWRMutation(
+    `${API_URL}/bookings`,
+    postRequest&lt;IBookRoomRequest, IBookRoomResponse&gt;
+  );
+
   const [formDataLocalStorage, setFormDataLocalStorage] =
     useLocalStorageState&lt;IFormData&gt;(&quot;form-data-state&quot;, {
       defaultValue: initialFormData,
@@ -85,12 +159,55 @@ const BookingForm = ({
   });
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState&lt;Date | null&gt;(null);
-  const [excludeDates, setExcludeDates] = useState&lt;[string, string][]&gt;([]);
+  const [isRoomAvailable, setIsRoomAvailable] = useState(false);
+  const [showBackToHomeButton, setShowBackToHomeButton] = useState(false);
 
-  const onFormSubmit = (e: ChangeEvent&lt;HTMLFormElement&gt;) =&gt; {
+  const onFormSubmit = async (e: ChangeEvent&lt;HTMLFormElement&gt;) =&gt; {
     e.preventDefault();
 
-    console.log(formData);
+    const bookedDays = calculateBookedDays(
+      formData.startDate,
+      formData.endDate
+    );
+
+    const totalCost =
+      roomPrice &amp;&amp; bookedDays !== 0 ? bookedDays * roomPrice : roomPrice;
+
+    try {
+      const newBooking = {
+        RoomID: roomId,
+        RoomPrice: roomPrice,
+        TotalPrice: totalCost,
+        TotalBookedDays: bookedDays,
+        Name: formData.name,
+        Email: formData.email,
+        Phone: formData.phone,
+        Message: formData.message,
+        StartDate: formData.startDate,
+        EndDate: formData.endDate,
+      } as IBookRoomRequest;
+
+      const res = (await bookRoom(newBooking)) as {
+        booked: boolean;
+        message: string;
+      };
+
+      if (!isLoadingBookRoom &amp;&amp; res?.booked) {
+        toastSuccess(res.message);
+        setFormData(initialFormData);
+        setFormDataLocalStorage(initialFormData);
+        setStartDate(new Date());
+        setEndDate(null);
+        setIsRoomAvailable(false);
+        setShowBackToHomeButton(true);
+      } else {
+        toastError(res.message);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toastError(error.message);
+      }
+    }
   };
 
   const onInputChange = (
@@ -116,11 +233,14 @@ const BookingForm = ({
     setEndDate(null);
     setFormData(initialFormData);
     setFormDataLocalStorage(initialFormData);
+    setIsRoomAvailable(false);
   };
 
   useEffect(() =&gt; {
-    setExcludeDates(excludeDatesProp);
-  }, [excludeDatesProp]);
+    if (availabilityData) {
+      setIsRoomAvailable(availabilityData.available);
+    }
+  }, [availabilityData]);
 
   useEffect(() =&gt; {
     if (startDate &amp;&amp; endDate) {
@@ -135,8 +255,28 @@ const BookingForm = ({
         startDate,
         endDate,
       });
+
+      checkAvailability({
+        RoomID: roomId,
+        StartDate: startDate,
+        EndDate: endDate,
+      }).catch(() =&gt; {
+        toastError(&quot;Something went wrong. Please try again later&quot;);
+      });
     }
   }, [startDate, endDate]);
+
+  useEffect(() =&gt; {
+    if (formData.startDate &amp;&amp; formData.endDate) {
+      checkAvailability({
+        RoomID: roomId,
+        StartDate: formData.startDate,
+        EndDate: formData.endDate,
+      }).catch(() =&gt; {
+        toastError(&quot;Something went wrong. Please try again later&quot;);
+      });
+    }
+  }, []);
 
   return (
     &lt;div className={cn(styles[&quot;booking-form-wrapper&quot;], className)}&gt;
@@ -157,81 +297,101 @@ const BookingForm = ({
             className={styles[&quot;booking-form-date-picker&quot;]}
             onDatePickerChange={onDatePickerChange}
             excludeDates={excludeDates}
+            startDate={formData.startDate}
             endDate={formData.endDate}
           /&gt;
         &lt;/Suspense&gt;
 
-        &lt;form className={styles[&quot;booking-form&quot;]} onSubmit={onFormSubmit}&gt;
-          &lt;label className={styles[&quot;booking-form-label&quot;]}&gt;
-            Name{&quot; &quot;}
-            &lt;Input
-              inputType=&quot;text&quot;
-              name=&quot;name&quot;
-              classNameInput={styles[&quot;booking-form-input&quot;]}
-              required
-              value={formData.name}
-              onChange={onInputChange}
-            /&gt;
-          &lt;/label&gt;
-
-          &lt;label className={styles[&quot;booking-form-label&quot;]}&gt;
-            Email{&quot; &quot;}
-            &lt;Input
-              inputType=&quot;email&quot;
-              name=&quot;email&quot;
-              classNameInput={styles[&quot;booking-form-input&quot;]}
-              required
-              value={formData.email}
-              onChange={onInputChange}
-            /&gt;
-          &lt;/label&gt;
-
-          &lt;label className={styles[&quot;booking-form-label&quot;]}&gt;
-            Phone{&quot; &quot;}
-            &lt;Input
-              inputType=&quot;tel&quot;
-              name=&quot;phone&quot;
-              classNameInput={styles[&quot;booking-form-input&quot;]}
-              required
-              value={formData.phone}
-              onChange={onInputChange}
-              pattern=&quot;[0-9]{3}-[0-9]{3}-[0-9]{4}&quot;
-            /&gt;
-            &lt;small&gt;Format: 123-456-7890&lt;/small&gt;
-          &lt;/label&gt;
-
-          &lt;label className={styles[&quot;booking-form-label&quot;]}&gt;
-            Message{&quot; &quot;}
-            &lt;textarea
-              name=&quot;message&quot;
-              className={styles[&quot;booking-form-area&quot;]}
-              rows={5}
-              required
-              value={formData.message}
-              onChange={onInputChange}
-            /&gt;
-          &lt;/label&gt;
-
-          &lt;div className={styles[&quot;booking-form-buttons&quot;]}&gt;
-            &lt;Button
-              className={styles[&quot;booking-form-button&quot;]}
-              disabled={!checkEmptyFields(formData, &quot;every&quot;)}
-              hasIcon={false}
-              type=&quot;submit&quot;
+        {!isRoomAvailable &amp;&amp;
+          formData.endDate !== null &amp;&amp;
+          !isLoadingAvailability &amp;&amp; (
+            &lt;motion.span
+              className={styles[&quot;booking-form-disabled-text&quot;]}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
             &gt;
-              Submit
-            &lt;/Button&gt;
+              These dates are not available for booking
+            &lt;/motion.span&gt;
+          )}
 
-            &lt;IconButton
-              onClick={onClearButtonClick}
-              type=&quot;button&quot;
-              title=&quot;clear&quot;
-              iconSrc=&quot;/icons/plus-icon.svg&quot;
-              iconAlt=&quot;close&quot;
-              className={styles[&quot;booking-form-button-clear&quot;]}
-            /&gt;
-          &lt;/div&gt;
-        &lt;/form&gt;
+        &lt;fieldset
+          disabled={!isRoomAvailable &amp;&amp; !isLoadingAvailability}
+          className={cn({
+            [styles[&quot;booking-form-disabled&quot;]]:
+              !isRoomAvailable &amp;&amp; !isLoadingAvailability,
+          })}
+        &gt;
+          &lt;form className={styles[&quot;booking-form&quot;]} onSubmit={onFormSubmit}&gt;
+            &lt;label className={styles[&quot;booking-form-label&quot;]}&gt;
+              Name{&quot; &quot;}
+              &lt;Input
+                inputType=&quot;text&quot;
+                name=&quot;name&quot;
+                classNameInput={styles[&quot;booking-form-input&quot;]}
+                required
+                value={formData.name}
+                onChange={onInputChange}
+              /&gt;
+            &lt;/label&gt;
+            &lt;label className={styles[&quot;booking-form-label&quot;]}&gt;
+              Email{&quot; &quot;}
+              &lt;Input
+                inputType=&quot;email&quot;
+                name=&quot;email&quot;
+                classNameInput={styles[&quot;booking-form-input&quot;]}
+                required
+                value={formData.email}
+                onChange={onInputChange}
+              /&gt;
+            &lt;/label&gt;
+            &lt;label className={styles[&quot;booking-form-label&quot;]}&gt;
+              Phone{&quot; &quot;}
+              &lt;Input
+                inputType=&quot;tel&quot;
+                name=&quot;phone&quot;
+                classNameInput={styles[&quot;booking-form-input&quot;]}
+                required
+                value={formData.phone}
+                onChange={onInputChange}
+                pattern=&quot;[0-9]{3}-[0-9]{3}-[0-9]{4}&quot;
+              /&gt;
+              &lt;small&gt;Format: 123-456-7890&lt;/small&gt;
+            &lt;/label&gt;
+            &lt;label className={styles[&quot;booking-form-label&quot;]}&gt;
+              Message{&quot; &quot;}
+              &lt;textarea
+                name=&quot;message&quot;
+                className={styles[&quot;booking-form-area&quot;]}
+                rows={5}
+                required
+                value={formData.message}
+                onChange={onInputChange}
+              /&gt;
+            &lt;/label&gt;
+            &lt;div className={styles[&quot;booking-form-buttons&quot;]}&gt;
+              &lt;Button
+                className={styles[&quot;booking-form-button&quot;]}
+                disabled={!checkEmptyFields(formData, &quot;every&quot;)}
+                hasIcon={false}
+                type=&quot;submit&quot;
+                title=&quot;Book&quot;
+              &gt;
+                Book
+              &lt;/Button&gt;
+              &lt;IconButton
+                onClick={onClearButtonClick}
+                disabled={!isRoomAvailable}
+                type=&quot;button&quot;
+                title=&quot;clear&quot;
+                iconSrc=&quot;/icons/plus-icon.svg&quot;
+                iconAlt=&quot;close&quot;
+                className={styles[&quot;booking-form-button-clear&quot;]}
+              /&gt;
+            &lt;/div&gt;
+          &lt;/form&gt;
+        &lt;/fieldset&gt;
       &lt;/div&gt;
 
       &lt;div className={styles[&quot;booking-form-right&quot;]}&gt;
@@ -249,13 +409,19 @@ const BookingForm = ({
           /&gt;
         &lt;/Suspense&gt;
       &lt;/div&gt;
+
+      {showBackToHomeButton &amp;&amp; (
+        &lt;Link to={ROUTES.HOME} className={styles[&quot;booking-form-link&quot;]}&gt;
+          Back to home
+        &lt;/Link&gt;
+      )}
     &lt;/div&gt;
   );
 };
 
 export default BookingForm;
 </textarea><pre id="annotations" style="display:none">[]</pre></div>
-    <p class="footer-text">TypeScript Coverage Report generated by <a href="https://github.com/plantain-00/type-coverage">type-coverage</a> and <a href="https://github.com/alexcanessa/typescript-coverage-report">typescript-coverage-report</a> at Sun, 14 Jan 2024 16:01:24 GMT</p>
+    <p class="footer-text">TypeScript Coverage Report generated by <a href="https://github.com/plantain-00/type-coverage">type-coverage</a> and <a href="https://github.com/alexcanessa/typescript-coverage-report">typescript-coverage-report</a> at Sat, 20 Jan 2024 18:06:50 GMT</p>
     </body>
   </html>
   

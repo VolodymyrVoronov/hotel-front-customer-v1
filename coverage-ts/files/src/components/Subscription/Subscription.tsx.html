@@ -11,15 +11,27 @@
 <link href="..\..\..\..\assets\source-file.css" type="text/css" rel="stylesheet">
     </head>
     <body>
-    <div style="margin-top:3em" class="ui container"><h1 class="ui header"><a href="..\..\..\..\index.html">TypeScript coverage report</a></h1><table style="margin-top:2em" class="ui celled table"><thead class=""><tr class=""><th class="">Filename</th><th class="">Percent</th><th class="">Threshold</th><th class="">Total</th><th class="">Covered</th><th class="">Uncovered</th></tr></thead><tbody class=""><tr class="positive"><td class="">src\components\Subscription\Subscription.tsx</td><td class="">100.00%</td><td class="">80%</td><td class="">96</td><td class="">96</td><td class="">0</td></tr></tbody></table><textarea id="editor" readonly="" style="margin-top:3em">import { ChangeEvent, useState } from &quot;react&quot;;
+    <div style="margin-top:3em" class="ui container"><h1 class="ui header"><a href="..\..\..\..\index.html">TypeScript coverage report</a></h1><table style="margin-top:2em" class="ui celled table"><thead class=""><tr class=""><th class="">Filename</th><th class="">Percent</th><th class="">Threshold</th><th class="">Total</th><th class="">Covered</th><th class="">Uncovered</th></tr></thead><tbody class=""><tr class="positive"><td class="">src\components\Subscription\Subscription.tsx</td><td class="">100.00%</td><td class="">80%</td><td class="">131</td><td class="">131</td><td class="">0</td></tr></tbody></table><textarea id="editor" readonly="" style="margin-top:3em">import { ChangeEvent, useState } from &quot;react&quot;;
 import { z } from &quot;zod&quot;;
-import { ToastContainer, ToastOptions, toast } from &quot;react-toastify&quot;;
+import { ToastOptions, toast } from &quot;react-toastify&quot;;
 import { useKeyPress } from &quot;ahooks&quot;;
+import useSWRMutation from &quot;swr/mutation&quot;;
+
+import { API_URL } from &quot;../../constants&quot;;
+import { postRequest } from &quot;../../helpers&quot;;
 
 import Button from &quot;../Button/Button&quot;;
 import Input from &quot;../Input/Input&quot;;
 
 import styles from &quot;./Subscription.module.css&quot;;
+
+interface ISubscriptionRequest {
+  Email: string;
+}
+
+interface ISubscriptionResponse {
+  message: string;
+}
 
 const emailSchema = z.string().email();
 
@@ -34,33 +46,54 @@ const toastConfig = {
   theme: &quot;light&quot;,
 } satisfies ToastOptions;
 
-const toastSuccess = (): void =&gt; {
-  toast.success(&quot;Thank you for subscribing!&quot;, {
+const toastSuccess = (message: string): void =&gt; {
+  toast.success(message, {
     ...toastConfig,
   });
 };
 
-const toastError = (): void =&gt; {
-  toast.error(&quot;Please enter a valid email&quot;, {
+const toastError = (message: string): void =&gt; {
+  toast.error(message, {
     ...toastConfig,
   });
 };
 
 const Subscription = (): JSX.Element =&gt; {
+  const { trigger: subscribe, isMutating: isLoadingSubscribe } = useSWRMutation(
+    `${API_URL}/subscription`,
+    postRequest&lt;ISubscriptionRequest, ISubscriptionResponse&gt;
+  );
+
   const [email, setEmail] = useState(&quot;&quot;);
 
   const onInputChange = (e: ChangeEvent&lt;HTMLInputElement&gt;): void =&gt; {
     setEmail(e.target.value);
   };
 
-  const onSubscribeButtonClick = (): void =&gt; {
+  const onSubscribeButtonClick = async (): Promise&lt;void&gt; =&gt; {
     const checkEmailResult = emailSchema.safeParse(email);
 
     if (checkEmailResult.success) {
-      toastSuccess();
-      setEmail(&quot;&quot;);
+      try {
+        const res = await subscribe({
+          Email: email,
+        });
+
+        if (!res) {
+          toastError(&quot;Something went wrong. Please try again later.&quot;);
+          return;
+        }
+
+        toastSuccess(res.message);
+        setEmail(&quot;&quot;);
+      } catch (error) {
+        if (error instanceof Error) {
+          toastError(error.message);
+          setEmail(&quot;&quot;);
+        }
+      }
     } else {
-      toastError();
+      toastError(&quot;Invalid email address&quot;);
     }
   };
 
@@ -71,39 +104,34 @@ const Subscription = (): JSX.Element =&gt; {
   });
 
   return (
-    &lt;&gt;
-      &lt;ToastContainer /&gt;
-      &lt;div className={styles[&quot;subscription-wrapper&quot;]}&gt;
-        &lt;p className={styles[&quot;subscription-text&quot;]}&gt;
-          Subscribe to our newsletter
-        &lt;/p&gt;
-        &lt;div className={styles[&quot;subscription-form&quot;]}&gt;
-          &lt;Input
-            onChange={onInputChange}
-            value={email}
-            inputType=&quot;email&quot;
-            placeholder=&quot;Email address&quot;
-            classNameWrapper={styles[&quot;subscription-input-wrapper&quot;]}
-            classNameInput={styles[&quot;subscription-input&quot;]}
-          /&gt;
+    &lt;div className={styles[&quot;subscription-wrapper&quot;]}&gt;
+      &lt;p className={styles[&quot;subscription-text&quot;]}&gt;Subscribe to our newsletter&lt;/p&gt;
+      &lt;div className={styles[&quot;subscription-form&quot;]}&gt;
+        &lt;Input
+          onChange={onInputChange}
+          value={email}
+          inputType=&quot;email&quot;
+          placeholder=&quot;Email address&quot;
+          classNameWrapper={styles[&quot;subscription-input-wrapper&quot;]}
+          classNameInput={styles[&quot;subscription-input&quot;]}
+        /&gt;
 
-          &lt;Button
-            onClick={onSubscribeButtonClick}
-            className={styles[&quot;subscription-button&quot;]}
-            hasIcon={false}
-            disabled={email.length === 0}
-          &gt;
-            OK
-          &lt;/Button&gt;
-        &lt;/div&gt;
+        &lt;Button
+          onClick={onSubscribeButtonClick}
+          className={styles[&quot;subscription-button&quot;]}
+          hasIcon={false}
+          disabled={email.length === 0 || isLoadingSubscribe}
+        &gt;
+          OK
+        &lt;/Button&gt;
       &lt;/div&gt;
-    &lt;/&gt;
+    &lt;/div&gt;
   );
 };
 
 export default Subscription;
 </textarea><pre id="annotations" style="display:none">[]</pre></div>
-    <p class="footer-text">TypeScript Coverage Report generated by <a href="https://github.com/plantain-00/type-coverage">type-coverage</a> and <a href="https://github.com/alexcanessa/typescript-coverage-report">typescript-coverage-report</a> at Sun, 14 Jan 2024 16:01:24 GMT</p>
+    <p class="footer-text">TypeScript Coverage Report generated by <a href="https://github.com/plantain-00/type-coverage">type-coverage</a> and <a href="https://github.com/alexcanessa/typescript-coverage-report">typescript-coverage-report</a> at Sat, 20 Jan 2024 18:06:50 GMT</p>
     </body>
   </html>
   

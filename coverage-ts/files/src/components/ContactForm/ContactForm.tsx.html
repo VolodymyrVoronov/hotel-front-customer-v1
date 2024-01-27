@@ -11,7 +11,7 @@
 <link href="..\..\..\..\assets\source-file.css" type="text/css" rel="stylesheet">
     </head>
     <body>
-    <div style="margin-top:3em" class="ui container"><h1 class="ui header"><a href="..\..\..\..\index.html">TypeScript coverage report</a></h1><table style="margin-top:2em" class="ui celled table"><thead class=""><tr class=""><th class="">Filename</th><th class="">Percent</th><th class="">Threshold</th><th class="">Total</th><th class="">Covered</th><th class="">Uncovered</th></tr></thead><tbody class=""><tr class="positive"><td class="">src\components\ContactForm\ContactForm.tsx</td><td class="">100.00%</td><td class="">80%</td><td class="">167</td><td class="">167</td><td class="">0</td></tr></tbody></table><textarea id="editor" readonly="" style="margin-top:3em">import {
+    <div style="margin-top:3em" class="ui container"><h1 class="ui header"><a href="..\..\..\..\index.html">TypeScript coverage report</a></h1><table style="margin-top:2em" class="ui celled table"><thead class=""><tr class=""><th class="">Filename</th><th class="">Percent</th><th class="">Threshold</th><th class="">Total</th><th class="">Covered</th><th class="">Uncovered</th></tr></thead><tbody class=""><tr class="positive"><td class="">src\components\ContactForm\ContactForm.tsx</td><td class="">100.00%</td><td class="">80%</td><td class="">211</td><td class="">211</td><td class="">0</td></tr></tbody></table><textarea id="editor" readonly="" style="margin-top:3em">import {
   ChangeEvent,
   ComponentProps,
   ForwardedRef,
@@ -20,10 +20,12 @@
 } from &quot;react&quot;;
 import cn from &quot;classnames&quot;;
 import { z } from &quot;zod&quot;;
-import { ToastContainer, ToastOptions, toast } from &quot;react-toastify&quot;;
+import { ToastOptions, toast } from &quot;react-toastify&quot;;
 import { useKeyPress } from &quot;ahooks&quot;;
+import useSWRMutation from &quot;swr/mutation&quot;;
 
-import { checkEmptyFields } from &quot;../../helpers&quot;;
+import { API_URL } from &quot;../../constants&quot;;
+import { checkEmptyFields, postRequest } from &quot;../../helpers&quot;;
 
 import Button from &quot;../Button/Button&quot;;
 import Input from &quot;../Input/Input&quot;;
@@ -46,6 +48,16 @@ const initialFormData = {
   message: &quot;&quot;,
 };
 
+interface IContactUsRequest {
+  Name: string;
+  Email: string;
+  Message: string;
+}
+
+interface IContactUsResponse {
+  message: string;
+}
+
 const emailSchema = z.string().email();
 
 const toastConfig = {
@@ -59,14 +71,14 @@ const toastConfig = {
   theme: &quot;light&quot;,
 } satisfies ToastOptions;
 
-const toastSuccess = (): void =&gt; {
-  toast.success(&quot;Thank you for subscribing!&quot;, {
+const toastSuccess = (message: string): void =&gt; {
+  toast.success(message, {
     ...toastConfig,
   });
 };
 
-const toastError = (): void =&gt; {
-  toast.error(&quot;Please enter a valid email&quot;, {
+const toastError = (message: string): void =&gt; {
+  toast.error(message, {
     ...toastConfig,
   });
 };
@@ -76,25 +88,51 @@ const ContactForm = forwardRef(
     { className, ...props }: IContactFormProps,
     ref: ForwardedRef&lt;HTMLFormElement&gt;
   ) =&gt; {
+    const { trigger: contactUs, isMutating: isLoadingContactUs } =
+      useSWRMutation(
+        `${API_URL}/contact-us`,
+        postRequest&lt;IContactUsRequest, IContactUsResponse&gt;
+      );
+
     const [formData, setFormData] = useState&lt;IFormData&gt;(initialFormData);
 
     const onInputChange = (
       e: ChangeEvent&lt;HTMLInputElement | HTMLTextAreaElement&gt;
     ) =&gt; {
       const { name, value } = e.target;
+
       setFormData({ ...formData, [name]: value });
     };
 
-    const onFormSubmit = (e: ChangeEvent&lt;HTMLFormElement&gt;) =&gt; {
+    const onFormSubmit = async (e: ChangeEvent&lt;HTMLFormElement&gt;) =&gt; {
       e.preventDefault();
 
       const checkEmailResult = emailSchema.safeParse(formData.email);
 
       if (checkEmailResult.success) {
-        toastSuccess();
-        setFormData(initialFormData);
+        try {
+          const newMessage = {
+            Name: formData.name,
+            Email: formData.email,
+            Message: formData.message,
+          };
+
+          const res = await contactUs(newMessage);
+
+          if (!res) {
+            toastError(&quot;Something went wrong. Please try again later.&quot;);
+            return;
+          }
+
+          toastSuccess(res.message);
+          setFormData(initialFormData);
+        } catch (error) {
+          if (error instanceof Error) {
+            toastError(error.message);
+          }
+        }
       } else {
-        toastError();
+        toastError(&quot;Please enter a valid email&quot;);
       }
     };
 
@@ -105,68 +143,65 @@ const ContactForm = forwardRef(
     });
 
     return (
-      &lt;&gt;
-        &lt;ToastContainer /&gt;
-        &lt;form
-          ref={ref}
-          className={cn(styles[&quot;contact-form&quot;], className)}
-          onSubmit={onFormSubmit}
-          {...props}
+      &lt;form
+        ref={ref}
+        className={cn(styles[&quot;contact-form&quot;], className)}
+        onSubmit={onFormSubmit}
+        {...props}
+      &gt;
+        &lt;label className={styles[&quot;contact-form-label&quot;]}&gt;
+          Name{&quot; &quot;}
+          &lt;Input
+            inputType=&quot;text&quot;
+            name=&quot;name&quot;
+            classNameWrapper={styles[&quot;contact-form-wrapper&quot;]}
+            classNameInput={styles[&quot;contact-form-input&quot;]}
+            required
+            value={formData.name}
+            onChange={onInputChange}
+          /&gt;
+        &lt;/label&gt;
+
+        &lt;label className={styles[&quot;contact-form-label&quot;]}&gt;
+          Email{&quot; &quot;}
+          &lt;Input
+            inputType=&quot;email&quot;
+            name=&quot;email&quot;
+            classNameWrapper={styles[&quot;contact-form-wrapper&quot;]}
+            classNameInput={styles[&quot;contact-form-input&quot;]}
+            required
+            value={formData.email}
+            onChange={onInputChange}
+          /&gt;
+        &lt;/label&gt;
+
+        &lt;label className={styles[&quot;contact-form-label&quot;]}&gt;
+          Message{&quot; &quot;}
+          &lt;textarea
+            name=&quot;message&quot;
+            className={styles[&quot;contact-form-area&quot;]}
+            rows={15}
+            required
+            value={formData.message}
+            onChange={onInputChange}
+          /&gt;
+        &lt;/label&gt;
+
+        &lt;Button
+          disabled={!checkEmptyFields(formData, &quot;every&quot;) || isLoadingContactUs}
+          className={styles[&quot;contact-form-button&quot;]}
+          hasIcon={false}
         &gt;
-          &lt;label className={styles[&quot;contact-form-label&quot;]}&gt;
-            Name{&quot; &quot;}
-            &lt;Input
-              inputType=&quot;text&quot;
-              name=&quot;name&quot;
-              classNameWrapper={styles[&quot;contact-form-wrapper&quot;]}
-              classNameInput={styles[&quot;contact-form-input&quot;]}
-              required
-              value={formData.name}
-              onChange={onInputChange}
-            /&gt;
-          &lt;/label&gt;
-
-          &lt;label className={styles[&quot;contact-form-label&quot;]}&gt;
-            Email{&quot; &quot;}
-            &lt;Input
-              inputType=&quot;email&quot;
-              name=&quot;email&quot;
-              classNameWrapper={styles[&quot;contact-form-wrapper&quot;]}
-              classNameInput={styles[&quot;contact-form-input&quot;]}
-              required
-              value={formData.email}
-              onChange={onInputChange}
-            /&gt;
-          &lt;/label&gt;
-
-          &lt;label className={styles[&quot;contact-form-label&quot;]}&gt;
-            Message{&quot; &quot;}
-            &lt;textarea
-              name=&quot;message&quot;
-              className={styles[&quot;contact-form-area&quot;]}
-              rows={15}
-              required
-              value={formData.message}
-              onChange={onInputChange}
-            /&gt;
-          &lt;/label&gt;
-
-          &lt;Button
-            disabled={!checkEmptyFields(formData, &quot;every&quot;)}
-            className={styles[&quot;contact-form-button&quot;]}
-            hasIcon={false}
-          &gt;
-            Submit
-          &lt;/Button&gt;
-        &lt;/form&gt;
-      &lt;/&gt;
+          Submit
+        &lt;/Button&gt;
+      &lt;/form&gt;
     );
   }
 );
 
 export default ContactForm;
 </textarea><pre id="annotations" style="display:none">[]</pre></div>
-    <p class="footer-text">TypeScript Coverage Report generated by <a href="https://github.com/plantain-00/type-coverage">type-coverage</a> and <a href="https://github.com/alexcanessa/typescript-coverage-report">typescript-coverage-report</a> at Sun, 14 Jan 2024 16:01:24 GMT</p>
+    <p class="footer-text">TypeScript Coverage Report generated by <a href="https://github.com/plantain-00/type-coverage">type-coverage</a> and <a href="https://github.com/alexcanessa/typescript-coverage-report">typescript-coverage-report</a> at Sat, 20 Jan 2024 18:06:50 GMT</p>
     </body>
   </html>
   
